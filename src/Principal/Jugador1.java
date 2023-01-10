@@ -29,7 +29,7 @@ public class Jugador1 extends Jugador {
 			do {
 				x = (int) (Math.random() * (this.getX()));
 				y = (int) (Math.random() * this.getY());
-			} while (this.getCasilla(x, y).isDisparado() || !Comprobaralrededor(x, y));
+			} while (this.getCasilla(x, y).isDisparado() || ! this.getCasilla(x, y).isPuededisparar());
 
 		} else {
 
@@ -54,7 +54,7 @@ public class Jugador1 extends Jugador {
 					y--;
 					break;
 				}
-				if (y >= this.getY() || y < 0 || x < 0 || x >= this.getX() || this.getCasilla(x, y).isDisparado() || !Comprobaralrededor(x, y)) {
+				if (y >= this.getY() || y < 0 || x < 0 || x >= this.getX() || this.getCasilla(x, y).isDisparado() || ! this.getCasilla(x, y).isPuededisparar()) {
 					actuUllTocado(getEstado());
 					setEstado(getEstado() + 1);
 					valido = false;
@@ -123,7 +123,9 @@ public class Jugador1 extends Jugador {
 	}
 
 	public void IAHundido() {
+		getUllTocado().getBarco().puededisparar();
 		setUllTocado(null);
+
 		setEstado(1);
 	}
 

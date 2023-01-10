@@ -5,7 +5,8 @@ public class Casilla {
 	private Barco barco;
 	private int x;
 	private int y;
-
+	private boolean puedebarco;
+	private boolean puededisparar;
 
 	@Override
 	public String toString() {
@@ -16,6 +17,8 @@ public class Casilla {
 		this.x = x;
 		this.y = y;
 		this.disparado = false;
+		this.puedebarco = true;
+		this.puededisparar = true;
 		this.barco = null;
 	}
 	public int getX() {
@@ -25,7 +28,18 @@ public class Casilla {
 	public int getY() {
 		return y;
 	}
-	
+	public boolean isPuededisparar() {
+		return puededisparar;
+	}
+	public void setPuededisparar(boolean puededisparar) {
+		this.puededisparar = puededisparar;
+	}
+	public boolean isPuedebarco() {
+		return puedebarco;
+	}
+	public void setPuedebarco(boolean puedebarco) {
+		this.puedebarco = puedebarco;
+	}
 	public boolean isDisparado() {
 		return disparado;
 	}

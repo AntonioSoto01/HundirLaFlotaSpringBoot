@@ -24,7 +24,7 @@ public class Principal {
 			if (!tocado.equals("Final")) {
 				do {
 					System.out.println();
-						System.out.println(jugador1.espacios() + "Pulsa enter para continuar");
+					System.out.println(jugador1.espacios() + "Pulsa enter para continuar");
 					s.nextLine();
 					System.out.println(jugador1.espacios() + "Turno del contrario" + '\n');
 					tocado = jugador1.disparado();

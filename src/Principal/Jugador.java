@@ -50,8 +50,7 @@ public class Jugador {
 	public void generarbarcos() {
 		for (int i = 0; i < barcos.length; i++) {
 			barcos[i] = new Barco(i, longBarco[i]);
-			barcos[i].colocarbarco(this);
-
+			barcos[i].generarbarco(this);
 		}
 
 	}
@@ -142,27 +141,29 @@ public class Jugador {
 
 			System.out.print(espacios() + String.format("%-6s", String.format("%2d", i + 1) + ")"));// numero eje x
 			for (int j = 0; j < this.getY(); j++) {
-				try {
 					if (this.getCasilla(i, j).isDisparado()) {
 
 						if (this.getCasilla(i, j).getBarco() != null) {
 							System.out.print(String.format("%-6s", "T"));// tocado
 						} else {
+							
 							System.out.print(String.format("%-6s", "A"));// agua
 						}
 					} else {
-						if (maquina) {
-							System.out.print(String.format("%-6s", this.getCasilla(i, j).getBarco().getID()));// barco visible
+						if (maquina&&this.getCasilla(i, j).getBarco()!=null){
+							System.out.print(String.format("%-6s", "B"));// barco visible 
 
 						} else {
-							System.out.print(String.format("%-6s", "-"));// barco invisible
-						}
+//							if(maquina&&!this.getCasilla(i, j).isPuededisparar()){
+//								System.out.print(String.format("%-6s", "R"));
+//							}else {
+							System.out.print(String.format("%-6s", "-"));//sin disparar o barco invisible
+//						}
+							}
 
 					}
 
-				} catch (java.lang.NullPointerException e) {
-					System.out.print(String.format("%-6s", "-"));// sin disparar
-				}
+
 			}
 			System.out.println('\n');
 			// System.out.println('\n');

@@ -1,37 +1,21 @@
 package Principal;
-
-import java.util.Scanner;
+import java.util.concurrent.Semaphore;
 
 public class Principal {
 
-	public static void main(String[] args) {
-		Jugador jugador1 = new Jugador1();
-		Scanner s = new Scanner(System.in);
-		jugador1.generarcasillas();
-		jugador1.generarbarcos();
-		Jugador maquina = new Jugador();
-		maquina.generarcasillas();
-		maquina.generarbarcos();
+    public static void main(String[] args) {
+        Semaphore semaphoreJugador1 = new Semaphore(1); // Semáforo para el jugador 1
+        Semaphore semaphoreJugador2 = new Semaphore(1); // Semáforo para el jugador 2
+        
+        Jugador jugador = new Jugador(semaphoreJugador2, null);
+        Jugador1 maquina = new Jugador1(semaphoreJugador1, jugador); // Pasar el jugador1 como rival
+        
+        jugador.setRival(maquina); // Establecer jugador2 como rival del jugador1
+        
+        Thread jugador1Thread = new Thread(jugador);
+        Thread jugador2Thread = new Thread(maquina);
 
-		String tocado = "";
-		maquina.ver(false);
-		while (!tocado.equals("Final")) {
-			do {
-				System.out.println("Tu turno" + '\n');
-				tocado = maquina.disparado();
-				maquina.ver(false);
-			} while (tocado.equals("Tocado"));
-			if (!tocado.equals("Final")) {
-				do {
-					System.out.println();
-					System.out.println(jugador1.espacios() + "Pulsa enter para continuar");
-					s.nextLine();
-					System.out.println(jugador1.espacios() + "Turno del contrario" + '\n');
-					tocado = jugador1.disparado();
-					jugador1.ver(true);
-				} while (tocado.equals("Tocado"));
-			}
-		}
-	}
-
+        jugador1Thread.start();
+        jugador2Thread.start();
+    }
 }

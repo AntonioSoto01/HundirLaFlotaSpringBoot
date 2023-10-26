@@ -3,8 +3,9 @@ package Principal;
 import java.util.concurrent.Semaphore;
 
 public class Jugador1 extends Jugador {
-	public Jugador1(Semaphore semaphore, Jugador rival) {
-		super(semaphore, rival);
+	private  final String MENSAJE_TURNO = "Turno rival" ;
+	public Jugador1(Semaphore semaphore, Jugador rival,Semaphore semaphoreRival) {
+		super(semaphore, rival,semaphoreRival);
 	}
 
 	private Casilla ultTocado = null;
@@ -25,36 +26,6 @@ public class Jugador1 extends Jugador {
 	public void setUllTocado(Casilla ultidisparo) {
 		this.ultTocado = ultidisparo;
 	}
-	public void run() {
-        // Esperar a que ambos jugadores hayan generado casillas y barcos
-        try {
-            this.getSemaphore().acquire();
-            generarcasillas();
-            generarbarcos();
-            this.getSemaphore().release();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        while (this.getJuegoEnCurso()) {
-            try {
-                this.getSemaphore().acquire(); // Adquirir el semáforo para el turno del jugador
-                System.out.println("Turno rival" + this.getRival().espacios()+'\n');
-                String tocado = this.getRival().disparado();
-                this.getRival().ver(false);
-
-                if (tocado.equals("Tocado")) {
-                } else if (tocado.equals("Final")) {
-                    // Finalizar el juego si se cumplen las condiciones (por ejemplo, todos los barcos del oponente hundidos)
-                    this.setJuegoEnCurso(false);
-                }
-                this.getSemaphore().release(); // Liberar el semáforo para el siguiente jugador
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 	public Casilla casillaDisparada() {
 		int x = 0;
 		int y = 0;

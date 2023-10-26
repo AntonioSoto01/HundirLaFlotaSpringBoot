@@ -4,6 +4,7 @@ import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
 public class Jugador implements Runnable{
+	private  final String MENSAJE_TURNO = "Tu turno" ;
 	private final int x = 10;
 	private final int y = 10;
 	private final int[] longBarco = { 1, 1, 1, 1, 2, 2, 2, 3, 3, 4 };
@@ -12,13 +13,15 @@ public class Jugador implements Runnable{
 	private Barco[] barcos = new Barco[nbarcos];
 	private int barcoshundidos = 0;
 	private Semaphore semaphore;
+		private Semaphore semaphoreRival;
     private boolean juegoEnCurso;
     private Jugador rival;
 
- public Jugador(Semaphore semaphore, Jugador rival) {
+ public Jugador(Semaphore semaphore, Jugador rival,Semaphore semaphoreRival) {
         this.semaphore = semaphore;
         this.juegoEnCurso = true;
         this.rival = rival;
+		this.semaphoreRival=semaphoreRival;
     }
 	public int getNbarco() {
 		return nbarcos;
@@ -63,36 +66,40 @@ public class Jugador implements Runnable{
 		public Semaphore getSemaphore() {
 		return semaphore;
 	}
+			public Semaphore getSemaphoreRival() {
+		return semaphoreRival;
+	}
 	public void run() {
-        // Esperar a que ambos jugadores hayan generado casillas y barcos
-        try {
-            this.getSemaphore().acquire();
-            generarcasillas();
-            generarbarcos();
-            this.getSemaphore().release();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        while (this.getJuegoEnCurso()) {
-            try {
-                this.getSemaphore().acquire(); // Adquirir el semáforo para el turno del jugador
-                System.out.println("Tu turno" + this.getRival().espacios()+'\n');
-                String tocado = this.getRival().disparado();
-                this.getRival().ver(false);
-
-                if (tocado.equals("Tocado")) {
-                } else if (tocado.equals("Final")) {
-                    // Finalizar el juego si se cumplen las condiciones (por ejemplo, todos los barcos del oponente hundidos)
-                    this.setJuegoEnCurso(false);
-                }
-                this.getSemaphore().release(); // Liberar el semáforo para el siguiente jugador
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
+		// Esperar a que ambos jugadores hayan generado casillas y barcos
+		try {
+			this.getSemaphore().acquire();
+			this.getRival().generarcasillas();
+			this.getRival().generarbarcos();
+			this.getSemaphoreRival().release();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	
+		while (this.getJuegoEnCurso()) {
+			try {
+				this.getSemaphore().acquire(); // Adquirir el semáforo para el turno del jugador actual
+				System.out.println(this.MENSAJE_TURNO+ this.getRival().espacios() + '\n');
+				String tocado = this.getRival().disparado();
+				this.getRival().ver(false);
+	
+				if (tocado.equals("Tocado")) {
+					// Realizar acciones en caso de que el disparo sea "Tocado"
+				} else if (tocado.equals("Final")) {
+					// Finalizar el juego si se cumplen las condiciones (por ejemplo, todos los barcos del oponente hundidos)
+					this.setJuegoEnCurso(false);
+				}
+				this.getSemaphoreRival().release(); // Liberar el semáforo para el siguiente turno del jugador rival
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 
     // Resto de métodos de la clase Jugador
 

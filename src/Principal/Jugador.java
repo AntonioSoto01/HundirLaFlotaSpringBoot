@@ -15,15 +15,16 @@ public class Jugador extends Thread {
 	private Semaphore semaphoreRival;
 	private boolean terminar;
 	private Jugador rival;
-	private Meta meta;
 	private String nombre;
+	private boolean ver;
 
-	public Jugador(Semaphore semaphore, Jugador rival, Semaphore semaphoreRival, Meta meta) {
+	public Jugador(Semaphore semaphore, Jugador rival, Semaphore semaphoreRival) {
 		this.semaphore = semaphore;
 		this.terminar = false;
 		this.rival = rival;
 		this.semaphoreRival = semaphoreRival;
-		this.meta = meta;
+	ver = true;
+
 		this.nombre="maquina";
 	}
 
@@ -49,9 +50,14 @@ public class Jugador extends Thread {
 	public boolean getTerminar() {
 		return terminar;
 	}
-
-	public void setTerminar(boolean juegoEnCurso) {
-		this.terminar = juegoEnCurso;
+	public boolean getVer() {
+		return ver;
+	}
+		public void setVer(boolean ver) {
+		this.ver = ver;
+	}
+	public void setTerminar(boolean terminar) {
+		this.terminar = terminar;
 	}
 
 	public Jugador getRival() {
@@ -86,41 +92,56 @@ public class Jugador extends Thread {
 		return semaphoreRival;
 	}
 
-	public void run() {
-		// Esperar a que ambos jugadores hayan generado casillas y barcos
-		try {
-			this.getSemaphore().acquire();
-			this.getRival().generarcasillas();
-			this.getRival().generarbarcos();
-			this.getSemaphoreRival().release();
+public void run() {
+    try {
+        iniciarJuego();
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+    
+    while (!terminar) {
+        try {
+			realizarTurno();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+    }
+}
 
-		while (!this.getTerminar()) {
-			try {
-				String tocado = "";
-				this.getSemaphore().acquire();
-				if (!this.getTerminar()) {
-					do {
-						System.out.println(this.nombre + espacios() + '\n');
-						tocado = this.getRival().disparado();
-						this.getRival().ver(true);
-					} while (tocado.equals("Tocado"));
-					if (tocado.equals("Final")) {
-						this.setTerminar(true);
-						this.getRival().setTerminar(true);
-					}
-					this.getSemaphoreRival().release(); 
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		meta.cruzar();
-	}
+private void iniciarJuego() throws InterruptedException {
+    semaphore.acquire();
+    generarcasillas();
+    generarbarcos();
+    semaphoreRival.release();
+}
 
-	// Resto de métodos de la clase Jugador
+private void realizarTurno() throws InterruptedException {
+    String tocado = "";
+    semaphore.acquire();
+    if (!terminar) {
+        do {
+            mostrarMensajeTurno(tocado);
+            tocado = rival.disparado();
+            rival.ver(getVer());
+
+            if (tocado.equals("Final")) {
+                terminar = true;
+                rival.setTerminar(true);
+            } else if  (!(tocado.equals("Tocado"))){
+                enter();
+            }
+        } while (tocado.equals("Tocado"));
+
+        semaphoreRival.release();
+    }
+}
+
+private void mostrarMensajeTurno(String tocado) {
+    String mensaje = (tocado.equals("Tocado")) ? " tiene otro turno" : "";
+    System.out.println(rival.espacios() + nombre + mensaje + '\n');
+}
+
+
 
 	public void generarcasillas() {
 		for (int i = 0; i < tablero.length; i++) {
@@ -139,6 +160,7 @@ public class Jugador extends Thread {
 	}
 
 	public String disparado() {
+
 		Casilla casillaDisparada = casillaDisparada();
 		casillaDisparada.setDisparado(true);
 		if (casillaDisparada.getBarco() != null) {// Tocado
@@ -156,14 +178,17 @@ public class Jugador extends Thread {
 			} else {
 				System.out.println(espacios() + "TOCADO!!!");
 			}
+
 			return "Tocado";
 		} // Agua
 		System.out.println(espacios() + "Agua");
 		IAgua();
+
 		return "Agua";
 	}
 
 	public Casilla casillaDisparada() {
+
 		int x = 0;
 		int y = 0;
 		boolean valido = true;
@@ -194,7 +219,12 @@ public class Jugador extends Thread {
 			veces = true;
 		} while (this.getCasilla(x, y).isDisparado());
 		System.out.println("Dispara a " + this.getCasilla(x, y).toString());
+
 		return this.getCasilla(x, y);
+	}
+
+	public void enter() {
+
 	}
 
 	public void IATocado(Casilla casillaDisparada) {

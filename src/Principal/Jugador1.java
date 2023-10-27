@@ -1,11 +1,13 @@
 package Principal;
 
+import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
 public class Jugador1 extends Jugador {
-	public Jugador1(Semaphore semaphore, Jugador rival,Semaphore semaphoreRival,Meta meta) {
-		super(semaphore, rival,semaphoreRival,meta);
+	public Jugador1(Semaphore semaphore, Jugador rival,Semaphore semaphoreRival) {
+		super(semaphore, rival,semaphoreRival);
 		this.setNombre("jugador");
+		this.setVer(false);
 	}
 
 	private Casilla ultTocado = null;
@@ -27,6 +29,7 @@ public class Jugador1 extends Jugador {
 		this.ultTocado = ultidisparo;
 	}
 	public Casilla casillaDisparada() {
+
 		int x = 0;
 		int y = 0;
 		Casilla casillaDisparada = null;
@@ -143,6 +146,14 @@ public class Jugador1 extends Jugador {
 	}
 
 	public String espacios() {
-		return String.format("%-130s", "");
+		return String.format("%-90s", "");
 	};
+
+	public void enter() {
+				Scanner s = new Scanner(System.in);
+						System.out.println();
+						System.out.println(this.getRival().espacios() + "Pulsa enter para continuar");
+						s.nextLine();
+	}
+
 }

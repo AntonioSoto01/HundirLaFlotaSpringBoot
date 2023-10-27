@@ -7,15 +7,15 @@ public class Principal {
     public static void main(String[] args) {
         Semaphore semaphoreJ = new Semaphore(0); // Semáforo para el jugador 1
         Semaphore semaphoreM = new Semaphore(1); // Semáforo para el jugador 2
-       Meta meta = new Meta();
-        Jugador jugador = new Jugador(semaphoreJ, null, semaphoreM,meta);
-        Jugador1 maquina = new Jugador1(semaphoreM, jugador, semaphoreJ,meta);
+
+        Jugador jugador = new Jugador(semaphoreJ, null, semaphoreM);
+        Jugador1 maquina = new Jugador1(semaphoreM, jugador, semaphoreJ);
 
         jugador.setRival(maquina); // Establecer jugador2 como rival del jugador1
 
         jugador.start();
         maquina.start();
- meta.inicio();
+
 
         if (jugador.getTerminar()) {
             System.out.println("Ha ganado el jugador");

@@ -3,9 +3,9 @@ package Principal;
 import java.util.concurrent.Semaphore;
 
 public class Jugador1 extends Jugador {
-	private  final String MENSAJE_TURNO = "Turno rival" ;
-	public Jugador1(Semaphore semaphore, Jugador rival,Semaphore semaphoreRival) {
-		super(semaphore, rival,semaphoreRival);
+	public Jugador1(Semaphore semaphore, Jugador rival,Semaphore semaphoreRival,Meta meta) {
+		super(semaphore, rival,semaphoreRival,meta);
+		this.setNombre("jugador");
 	}
 
 	private Casilla ultTocado = null;

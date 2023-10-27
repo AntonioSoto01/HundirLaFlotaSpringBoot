@@ -3,8 +3,7 @@ package Principal;
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
-public class Jugador implements Runnable{
-	private  final String MENSAJE_TURNO = "Tu turno" ;
+public class Jugador extends Thread {
 	private final int x = 10;
 	private final int y = 10;
 	private final int[] longBarco = { 1, 1, 1, 1, 2, 2, 2, 3, 3, 4 };
@@ -13,19 +12,31 @@ public class Jugador implements Runnable{
 	private Barco[] barcos = new Barco[nbarcos];
 	private int barcoshundidos = 0;
 	private Semaphore semaphore;
-		private Semaphore semaphoreRival;
-    private boolean juegoEnCurso;
-    private Jugador rival;
+	private Semaphore semaphoreRival;
+	private boolean terminar;
+	private Jugador rival;
+	private Meta meta;
+	private String nombre;
 
- public Jugador(Semaphore semaphore, Jugador rival,Semaphore semaphoreRival) {
-        this.semaphore = semaphore;
-        this.juegoEnCurso = true;
-        this.rival = rival;
-		this.semaphoreRival=semaphoreRival;
-    }
+	public Jugador(Semaphore semaphore, Jugador rival, Semaphore semaphoreRival, Meta meta) {
+		this.semaphore = semaphore;
+		this.terminar = false;
+		this.rival = rival;
+		this.semaphoreRival = semaphoreRival;
+		this.meta = meta;
+		this.nombre="maquina";
+	}
+
 	public int getNbarco() {
 		return nbarcos;
 	}
+	public String getNombre() {
+		return this.nombre;
+	}
+		public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
 
 	public int getBarcoshundidos() {
 		return barcoshundidos;
@@ -34,20 +45,23 @@ public class Jugador implements Runnable{
 	public void setBarcoshundidos(int barcoshundidos) {
 		this.barcoshundidos = barcoshundidos;
 	}
-	public boolean getJuegoEnCurso() {
-		return juegoEnCurso;
+
+	public boolean getTerminar() {
+		return terminar;
 	}
 
-	public void setJuegoEnCurso(boolean juegoEnCurso) {
-		this.juegoEnCurso = juegoEnCurso;
+	public void setTerminar(boolean juegoEnCurso) {
+		this.terminar = juegoEnCurso;
 	}
-		public Jugador getRival() {
+
+	public Jugador getRival() {
 		return rival;
 	}
 
 	public void setRival(Jugador rival) {
-		this.rival= rival;
+		this.rival = rival;
 	}
+
 	public int getX() {
 		return x;
 	}
@@ -63,12 +77,15 @@ public class Jugador implements Runnable{
 	public Barco getBarco(int x) {
 		return barcos[x];
 	}
-		public Semaphore getSemaphore() {
+
+	public Semaphore getSemaphore() {
 		return semaphore;
 	}
-			public Semaphore getSemaphoreRival() {
+
+	public Semaphore getSemaphoreRival() {
 		return semaphoreRival;
 	}
+
 	public void run() {
 		// Esperar a que ambos jugadores hayan generado casillas y barcos
 		try {
@@ -79,29 +96,31 @@ public class Jugador implements Runnable{
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	
-		while (this.getJuegoEnCurso()) {
+
+		while (!this.getTerminar()) {
 			try {
-				this.getSemaphore().acquire(); // Adquirir el semáforo para el turno del jugador actual
-				System.out.println(this.MENSAJE_TURNO+ this.getRival().espacios() + '\n');
-				String tocado = this.getRival().disparado();
-				this.getRival().ver(false);
-	
-				if (tocado.equals("Tocado")) {
-					// Realizar acciones en caso de que el disparo sea "Tocado"
-				} else if (tocado.equals("Final")) {
-					// Finalizar el juego si se cumplen las condiciones (por ejemplo, todos los barcos del oponente hundidos)
-					this.setJuegoEnCurso(false);
+				String tocado = "";
+				this.getSemaphore().acquire();
+				if (!this.getTerminar()) {
+					do {
+						System.out.println(this.nombre + espacios() + '\n');
+						tocado = this.getRival().disparado();
+						this.getRival().ver(true);
+					} while (tocado.equals("Tocado"));
+					if (tocado.equals("Final")) {
+						this.setTerminar(true);
+						this.getRival().setTerminar(true);
+					}
+					this.getSemaphoreRival().release(); 
 				}
-				this.getSemaphoreRival().release(); // Liberar el semáforo para el siguiente turno del jugador rival
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		meta.cruzar();
 	}
-	
 
-    // Resto de métodos de la clase Jugador
+	// Resto de métodos de la clase Jugador
 
 	public void generarcasillas() {
 		for (int i = 0; i < tablero.length; i++) {
@@ -133,7 +152,7 @@ public class Jugador implements Runnable{
 					System.out.println(espacios() + "Todos los barcos hundidos");
 					return "Final";
 				}
-//				return "Hundido";
+				// return "Hundido";
 			} else {
 				System.out.println(espacios() + "TOCADO!!!");
 			}
@@ -205,28 +224,27 @@ public class Jugador implements Runnable{
 
 			System.out.print(espacios() + String.format("%-6s", String.format("%2d", i + 1) + ")"));// numero eje x
 			for (int j = 0; j < this.getY(); j++) {
-					if (this.getCasilla(i, j).isDisparado()) {
+				if (this.getCasilla(i, j).isDisparado()) {
 
-						if (this.getCasilla(i, j).getBarco() != null) {
-							System.out.print(String.format("%-6s", "T"));// tocado
-						} else {
-							
-							System.out.print(String.format("%-6s", "A"));// agua
-						}
+					if (this.getCasilla(i, j).getBarco() != null) {
+						System.out.print(String.format("%-6s", "T"));// tocado
 					} else {
-						if (maquina&&this.getCasilla(i, j).getBarco()!=null){
-							System.out.print(String.format("%-6s", "B"));// barco visible 
 
-						} else {
-//							if(maquina&&!this.getCasilla(i, j).isPuededisparar()){
-//								System.out.print(String.format("%-6s", "R"));
-//							}else {
-							System.out.print(String.format("%-6s", "-"));//sin disparar o barco invisible
-//						}
-							}
+						System.out.print(String.format("%-6s", "A"));// agua
+					}
+				} else {
+					if (maquina && this.getCasilla(i, j).getBarco() != null) {
+						System.out.print(String.format("%-6s", "B"));// barco visible
 
+					} else {
+						// if(maquina&&!this.getCasilla(i, j).isPuededisparar()){
+						// System.out.print(String.format("%-6s", "R"));
+						// }else {
+						System.out.print(String.format("%-6s", "-"));// sin disparar o barco invisible
+						// }
 					}
 
+				}
 
 			}
 			System.out.println('\n');

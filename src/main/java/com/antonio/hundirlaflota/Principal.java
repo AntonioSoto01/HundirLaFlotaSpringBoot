@@ -1,4 +1,4 @@
-package Principal;
+package com.antonio.hundirlaflota;
 
 import java.util.concurrent.Semaphore;
 
@@ -16,16 +16,6 @@ public class Principal {
         jugador.start();
         maquina.start();
 
-
-        if (jugador.getTerminar()) {
-            System.out.println("Ha ganado el jugador");
-
-        } else if(maquina.getTerminar()){
-
-
-            System.out.println("Ha ganado la maquina");
-            semaphoreJ.release();
-        }
 
         try {
             jugador.join(); // Esperar a que el hilo del jugador termine

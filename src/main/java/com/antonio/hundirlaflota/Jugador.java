@@ -1,8 +1,10 @@
-package Principal;
+package com.antonio.hundirlaflota;
 
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
+import lombok.Data;
+@Data
 public class Jugador extends Thread {
 	private static final String FINAL = "Final";
 	private static final String TOCADO = "Tocado";
@@ -30,48 +32,12 @@ public class Jugador extends Thread {
 		this.nombre = "jugador";
 	}
 
-	public int getNbarco() {
+	public int getNbarcos() {
 		return nbarcos;
 	}
-
-	public String getNombre() {
-		return this.nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public int getBarcoshundidos() {
-		return barcoshundidos;
-	}
-
-	public void setBarcoshundidos(int barcoshundidos) {
-		this.barcoshundidos = barcoshundidos;
-	}
-
-	public boolean getTerminar() {
-		return terminar;
-	}
-
+	
 	public boolean getVer() {
 		return ver;
-	}
-
-	public void setVer(boolean ver) {
-		this.ver = ver;
-	}
-
-	public void setTerminar(boolean terminar) {
-		this.terminar = terminar;
-	}
-
-	public Jugador getRival() {
-		return rival;
-	}
-
-	public void setRival(Jugador rival) {
-		this.rival = rival;
 	}
 
 	public int getX() {
@@ -90,13 +56,6 @@ public class Jugador extends Thread {
 		return barcos[x];
 	}
 
-	public Semaphore getSemaphore() {
-		return semaphore;
-	}
-
-	public Semaphore getSemaphoreRival() {
-		return semaphoreRival;
-	}
 
 	public void run() {
 		try {
@@ -171,7 +130,7 @@ public class Jugador extends Thread {
 				System.out.println(espacios() + "HUNDIDO!!!");
 				IAHundido();
 				this.setBarcoshundidos(this.getBarcoshundidos() + 1);
-				if (this.getBarcoshundidos() == this.getNbarco()) {// Final
+				if (this.getBarcoshundidos() == this.getNbarcos()) {// Final
 					System.out.println(espacios() + "Todos los barcos hundidos");
 					return FINAL;
 				}

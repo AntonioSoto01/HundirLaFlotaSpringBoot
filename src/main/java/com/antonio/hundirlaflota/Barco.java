@@ -1,8 +1,11 @@
-package Principal;
+package com.antonio.hundirlaflota;
 
 import java.util.ArrayList;
 
+import lombok.Data;
+@Data
 public class Barco {
+
 	private int ID;
 	private int longitud = 2;
 	private int tocado = 0;
@@ -15,33 +18,6 @@ public class Barco {
 		this.longitud = longitud;
 	}
 
-	public int getTocado() {
-		return tocado;
-	}
-
-	public void setTocado(int tocado) {
-		this.tocado = tocado;
-	}
-
-	public int getID() {
-		return ID;
-	}
-
-	public void setID(int ID) {
-		this.ID = ID;
-	}
-
-	public int getLongitud() {
-		return longitud;
-	}
-
-	public void setLongitud(int longitud) {
-		this.longitud = longitud;
-	}
-
-	public Casilla getPosicion(int x) {
-		return posiciones.get(x);
-	}
 
 	public void generarbarco(Jugador jugador) {
 

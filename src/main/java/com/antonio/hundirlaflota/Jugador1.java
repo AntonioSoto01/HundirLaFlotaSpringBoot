@@ -1,8 +1,10 @@
-package Principal;
+package com.antonio.hundirlaflota;
 
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
+import lombok.Data;
+@Data
 public class Jugador1 extends Jugador {
 	public Jugador1(Semaphore semaphore, Jugador rival,Semaphore semaphoreRival) {
 		super(semaphore, rival,semaphoreRival);

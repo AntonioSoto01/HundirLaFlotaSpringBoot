@@ -6,8 +6,8 @@ import java.util.concurrent.Semaphore;
 public class Jugador1 extends Jugador {
 	public Jugador1(Semaphore semaphore, Jugador rival,Semaphore semaphoreRival) {
 		super(semaphore, rival,semaphoreRival);
-		this.setNombre("jugador");
-		this.setVer(false);
+		this.setNombre("maquina");
+		this.setVer(true);
 	}
 
 	private Casilla ultTocado = null;
@@ -79,33 +79,6 @@ public class Jugador1 extends Jugador {
 		return casillaDisparada;
 	}
 
-	public boolean Comprobaralrededor(int x, int y) {
-		int i = x - 1;
-		int j = y - 1;
-		boolean valido = true;
-		while (i <= x + 1 && valido) {
-			j = y - 1;
-			while (j <= y + 1 && valido) {
-
-				try {
-
-					if (((this.getCasilla(i, j).getBarco() != null && this.getCasilla(i, j) != this.getUllTocado()) && this.getCasilla(i, j).isDisparado())) {
-						valido = false;
-						// System.out.print(espacios()+getCasilla(x,y).toString());
-						// System.out.println(espacios()+getCasilla(i,j).toString());
-					}
-
-				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-				}
-
-				j++;
-			}
-			i++;
-		}
-		return valido;
-
-	}
-
 	public void actuUllTocado(int estado) {
 		int tocado = getUllTocado().getBarco().getTocado();
 		switch (estado) {
@@ -150,10 +123,9 @@ public class Jugador1 extends Jugador {
 	};
 
 	public void enter() {
-				Scanner s = new Scanner(System.in);
-						System.out.println();
-						System.out.println(this.getRival().espacios() + "Pulsa enter para continuar");
-						s.nextLine();
+		Scanner s = new Scanner(System.in);
+		System.out.println();
+		System.out.println(this.espacios() + "Pulsa enter para continuar");
+		s.nextLine();
 	}
-
 }

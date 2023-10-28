@@ -4,10 +4,12 @@ import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
 public class Jugador extends Thread {
-	private final int x = 10;
-	private final int y = 10;
-	private final int[] longBarco = { 1, 1, 1, 1, 2, 2, 2, 3, 3, 4 };
-	private final int nbarcos = longBarco.length;
+	private static final String FINAL = "Final";
+	private static final String TOCADO = "Tocado";
+	private static final int x = 10;
+	private static final int y = 10;
+	private static final int[] longBarco = { 1, 1, 1, 1, 2, 2, 2, 3, 3, 4 };
+	private static final int nbarcos = longBarco.length;
 	private Casilla[][] tablero = new Casilla[x][y];
 	private Barco[] barcos = new Barco[nbarcos];
 	private int barcoshundidos = 0;
@@ -23,21 +25,22 @@ public class Jugador extends Thread {
 		this.terminar = false;
 		this.rival = rival;
 		this.semaphoreRival = semaphoreRival;
-	ver = true;
+		ver = false;
 
-		this.nombre="maquina";
+		this.nombre = "jugador";
 	}
 
 	public int getNbarco() {
 		return nbarcos;
 	}
+
 	public String getNombre() {
 		return this.nombre;
 	}
-		public void setNombre(String nombre) {
+
+	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-
 
 	public int getBarcoshundidos() {
 		return barcoshundidos;
@@ -50,12 +53,15 @@ public class Jugador extends Thread {
 	public boolean getTerminar() {
 		return terminar;
 	}
+
 	public boolean getVer() {
 		return ver;
 	}
-		public void setVer(boolean ver) {
+
+	public void setVer(boolean ver) {
 		this.ver = ver;
 	}
+
 	public void setTerminar(boolean terminar) {
 		this.terminar = terminar;
 	}
@@ -92,56 +98,51 @@ public class Jugador extends Thread {
 		return semaphoreRival;
 	}
 
-public void run() {
-    try {
-        iniciarJuego();
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-    
-    while (!terminar) {
-        try {
-			realizarTurno();
+	public void run() {
+		try {
+			iniciarJuego();
+
+			while (!terminar) {
+
+				realizarTurno();
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-    }
-}
+	}
 
-private void iniciarJuego() throws InterruptedException {
-    semaphore.acquire();
-    generarcasillas();
-    generarbarcos();
-    semaphoreRival.release();
-}
+	private void iniciarJuego() throws InterruptedException {
+		semaphore.acquire();
+		generarcasillas();
+		generarbarcos();
+		semaphoreRival.release();
+	}
 
-private void realizarTurno() throws InterruptedException {
-    String tocado = "";
-    semaphore.acquire();
-    if (!terminar) {
-        do {
-            mostrarMensajeTurno(tocado);
-            tocado = rival.disparado();
-            rival.ver(getVer());
+	private void realizarTurno() throws InterruptedException {
+		String tocado = "";
+		semaphore.acquire();
+		if (!terminar) {
+			do {
+				enter();
+				mostrarMensajeTurno(tocado);
+				tocado = disparado();
+				ver(getVer());
 
-            if (tocado.equals("Final")) {
-                terminar = true;
-                rival.setTerminar(true);
-            } else if  (!(tocado.equals("Tocado"))){
-                enter();
-            }
-        } while (tocado.equals("Tocado"));
+				if (tocado.equals(FINAL)) {
+					terminar = true;
+					rival.setTerminar(true);
+				}
 
-        semaphoreRival.release();
-    }
-}
+			} while (tocado.equals(TOCADO));
 
-private void mostrarMensajeTurno(String tocado) {
-    String mensaje = (tocado.equals("Tocado")) ? " tiene otro turno" : "";
-    System.out.println(rival.espacios() + nombre + mensaje + '\n');
-}
+			semaphoreRival.release();
+		}
+	}
 
-
+	private void mostrarMensajeTurno(String tocado) {
+		String mensaje = (tocado.equals(TOCADO)) ? " tiene otro turno" : "";
+		System.out.println(espacios() + nombre + mensaje + '\n');
+	}
 
 	public void generarcasillas() {
 		for (int i = 0; i < tablero.length; i++) {
@@ -172,14 +173,14 @@ private void mostrarMensajeTurno(String tocado) {
 				this.setBarcoshundidos(this.getBarcoshundidos() + 1);
 				if (this.getBarcoshundidos() == this.getNbarco()) {// Final
 					System.out.println(espacios() + "Todos los barcos hundidos");
-					return "Final";
+					return FINAL;
 				}
 				// return "Hundido";
 			} else {
 				System.out.println(espacios() + "TOCADO!!!");
 			}
 
-			return "Tocado";
+			return TOCADO;
 		} // Agua
 		System.out.println(espacios() + "Agua");
 		IAgua();

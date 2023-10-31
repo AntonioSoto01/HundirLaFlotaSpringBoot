@@ -1,41 +1,54 @@
 package com.antonio.hundirlaflota;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 @Data
-public class Jugador extends Thread {
+@Entity
+public class Jugador  {
+		    @Id
+	    @GeneratedValue(strategy = GenerationType.AUTO)
+	    private long id;
 	private static final String FINAL = "Final";
 	private static final String TOCADO = "Tocado";
 	private static final int x = 10;
 	private static final int y = 10;
 	private static final int[] longBarco = { 1, 1, 1, 1, 2, 2, 2, 3, 3, 4 };
 	private static final int nbarcos = longBarco.length;
-	private Casilla[][] tablero = new Casilla[x][y];
-	private Barco[] barcos = new Barco[nbarcos];
+		    @OneToMany(cascade = CascadeType.ALL)
+		private List<Casilla> tablero = new ArrayList<Casilla>();
+
+	    @OneToMany( cascade = CascadeType.ALL)
+    private List<Barco> barcos=new ArrayList<Barco>();
 	private int barcoshundidos = 0;
 	private Semaphore semaphore;
 	private Semaphore semaphoreRival;
 	private boolean terminar;
+	@OneToOne
 	private Jugador rival;
 	private String nombre;
 	private boolean ver;
 
-	public Jugador(Semaphore semaphore, Jugador rival, Semaphore semaphoreRival) {
-		this.semaphore = semaphore;
+	public Jugador() {
 		this.terminar = false;
-		this.rival = rival;
-		this.semaphoreRival = semaphoreRival;
 		ver = false;
-
 		this.nombre = "jugador";
 	}
 
 	public int getNbarcos() {
 		return nbarcos;
 	}
-	
+
 	public boolean getVer() {
 		return ver;
 	}
@@ -49,72 +62,28 @@ public class Jugador extends Thread {
 	}
 
 	public Casilla getCasilla(int x, int y) {
-		return tablero[x][y];
-	}
-
-	public Barco getBarco(int x) {
-		return barcos[x];
+		return tablero.get(x*this.x+y);
 	}
 
 
-	public void run() {
-		try {
-			iniciarJuego();
-
-			while (!terminar) {
-
-				realizarTurno();
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void iniciarJuego() throws InterruptedException {
-		semaphore.acquire();
-		generarcasillas();
-		generarbarcos();
-		semaphoreRival.release();
-	}
-
-	private void realizarTurno() throws InterruptedException {
-		String tocado = "";
-		semaphore.acquire();
-		if (!terminar) {
-			do {
-				enter();
-				mostrarMensajeTurno(tocado);
-				tocado = disparado();
-				ver(getVer());
-
-				if (tocado.equals(FINAL)) {
-					terminar = true;
-					rival.setTerminar(true);
-				}
-
-			} while (tocado.equals(TOCADO));
-
-			semaphoreRival.release();
-		}
-	}
-
-	private void mostrarMensajeTurno(String tocado) {
+	public void mostrarMensajeTurno(String tocado) {
 		String mensaje = (tocado.equals(TOCADO)) ? " tiene otro turno" : "";
 		System.out.println(espacios() + nombre + mensaje + '\n');
 	}
 
 	public void generarcasillas() {
-		for (int i = 0; i < tablero.length; i++) {
-			for (int j = 0; j < tablero[i].length; j++) {
-				tablero[i][j] = new Casilla(i, j);
+		for (int i = 0; i < x; i++) {
+			for (int j = 0; j < y; j++) {
+				tablero.add( new Casilla(i, j));
 			}
 		}
 	}
 
 	public void generarbarcos() {
-		for (int i = 0; i < barcos.length; i++) {
-			barcos[i] = new Barco(i, longBarco[i]);
-			barcos[i].generarbarco(this);
+		for (int i = 0; i < nbarcos; i++) {
+			Barco barco=   new Barco(i, longBarco[i]);
+			barcos.add(barco);
+			barco.generarbarco(this);
 		}
 
 	}

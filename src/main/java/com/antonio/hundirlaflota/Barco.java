@@ -1,16 +1,33 @@
 package com.antonio.hundirlaflota;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 @Data
+@Entity
+@NoArgsConstructor
 public class Barco {
-
+		    @Id
+	    @GeneratedValue(strategy = GenerationType.AUTO)
 	private int ID;
 	private int longitud = 2;
 	private int tocado = 0;
-	private ArrayList<Casilla> posiciones = new ArrayList<Casilla>();
-	private ArrayList<Casilla> alrededor = new ArrayList<Casilla>();
+    @OneToMany( cascade = CascadeType.ALL)
+    private List<Casilla> posiciones=new ArrayList<Casilla>();
+
+    @OneToMany( cascade = CascadeType.ALL)
+    private List<Casilla> alrededor=new ArrayList<Casilla>();
+
 
 	public Barco(int ID, int longitud) {
 		super();

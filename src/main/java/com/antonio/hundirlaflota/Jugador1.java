@@ -6,8 +6,8 @@ import java.util.concurrent.Semaphore;
 import lombok.Data;
 @Data
 public class Jugador1 extends Jugador {
-	public Jugador1(Semaphore semaphore, Jugador rival,Semaphore semaphoreRival) {
-		super(semaphore, rival,semaphoreRival);
+	public Jugador1() {
+		super();
 		this.setNombre("maquina");
 		this.setVer(true);
 	}

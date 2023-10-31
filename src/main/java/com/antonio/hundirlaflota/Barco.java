@@ -5,11 +5,10 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,14 +17,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Barco {
 		    @Id
-	    @GeneratedValue(strategy = GenerationType.AUTO)
+	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int ID;
 	private int longitud = 2;
 	private int tocado = 0;
-    @OneToMany( cascade = CascadeType.ALL)
+    @OneToMany( cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Casilla> posiciones=new ArrayList<Casilla>();
 
-    @OneToMany( cascade = CascadeType.ALL)
+    @OneToMany( cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Casilla> alrededor=new ArrayList<Casilla>();
 
 
@@ -110,6 +109,11 @@ public class Barco {
 		for (Casilla casilla : alrededor) {
 			casilla.setPuededisparar(false);
 		}
+	}
+
+
+	public Object getId() {
+		return null;
 	}
 
 }

@@ -3,39 +3,34 @@ package com.antonio.hundirlaflota;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.Semaphore;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.transaction.Transactional;
 import lombok.Data;
 @Data
 @Entity
 public class Jugador  {
 		    @Id
-	    @GeneratedValue(strategy = GenerationType.AUTO)
+	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    private long id;
 	private static final String FINAL = "Final";
 	private static final String TOCADO = "Tocado";
 	private static final int x = 10;
 	private static final int y = 10;
-	private static final int[] longBarco = { 1, 1, 1, 1, 2, 2, 2, 3, 3, 4 };
+	private static final int[] longBarco = { 1};
 	private static final int nbarcos = longBarco.length;
-		    @OneToMany(cascade = CascadeType.ALL)
+		    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 		private List<Casilla> tablero = new ArrayList<Casilla>();
 
-	    @OneToMany( cascade = CascadeType.ALL)
+	    @OneToMany( cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Barco> barcos=new ArrayList<Barco>();
 	private int barcoshundidos = 0;
-	private Semaphore semaphore;
-	private Semaphore semaphoreRival;
 	private boolean terminar;
-	@OneToOne
-	private Jugador rival;
 	private String nombre;
 	private boolean ver;
 
@@ -53,14 +48,16 @@ public class Jugador  {
 		return ver;
 	}
 
-	public int getX() {
+	public static int getX() {
 		return x;
 	}
 
-	public int getY() {
+	public static int getY() {
 		return y;
 	}
-
+    public int[] getLongBarco() {
+        return longBarco;
+    }
 	public Casilla getCasilla(int x, int y) {
 		return tablero.get(x*this.x+y);
 	}
@@ -71,22 +68,7 @@ public class Jugador  {
 		System.out.println(espacios() + nombre + mensaje + '\n');
 	}
 
-	public void generarcasillas() {
-		for (int i = 0; i < x; i++) {
-			for (int j = 0; j < y; j++) {
-				tablero.add( new Casilla(i, j));
-			}
-		}
-	}
 
-	public void generarbarcos() {
-		for (int i = 0; i < nbarcos; i++) {
-			Barco barco=   new Barco(i, longBarco[i]);
-			barcos.add(barco);
-			barco.generarbarco(this);
-		}
-
-	}
 
 	public String disparado() {
 

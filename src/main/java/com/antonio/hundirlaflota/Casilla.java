@@ -4,24 +4,31 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
 @Entity
+@IdClass(CasillaId.class)
 public class Casilla {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private boolean disparado;
-	@ManyToOne
-	private Barco barco;
+    @Id
+    private int x;
+    
+    @Id
 
-	private int x;
-	private int y;
-	private boolean puedebarco;
-	private boolean puededisparar;
+    private int y;
+    
+    private boolean disparado;
+    
+    @ManyToOne
+    private Barco barco;
+    
+    private boolean puedebarco;
+    private boolean puededisparar;
+
+
 	@Override
 	public String toString() {
 		return ((char) ('A' + y) + "" + (x + 1));

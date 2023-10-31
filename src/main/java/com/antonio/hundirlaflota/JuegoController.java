@@ -1,4 +1,5 @@
 package com.antonio.hundirlaflota;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,12 +16,9 @@ public class JuegoController {
 
     @PostMapping("/iniciar")
     public ResponseEntity<String> iniciarJuego() {
-        Jugador jugador = new Jugador();
-        Jugador maquina = new Jugador();
-        
-        // Luego, asigna estas instancias a los atributos de tu servicio
-        juegoService.setJugador(jugador);
-        juegoService.setMaquina(maquina);
+ 
+        juegoService.iniciarJuego();
+
         return ResponseEntity.ok("Juego iniciado.");
     }
 

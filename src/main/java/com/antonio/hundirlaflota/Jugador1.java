@@ -3,6 +3,7 @@ package com.antonio.hundirlaflota;
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
+import jakarta.persistence.Entity;
 import lombok.Data;
 @Data
 public class Jugador1 extends Jugador {

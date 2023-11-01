@@ -7,6 +7,7 @@ import java.util.List;
 @Repository
 public interface BarcoRepository extends CrudRepository<Barco,Long>{
 
-List<Barco> findByID(Long id);
+List<Barco> findByPosicion(Long id);
+Barco findById(long id);
 
 }

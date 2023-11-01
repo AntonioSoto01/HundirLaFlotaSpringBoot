@@ -1,22 +1,27 @@
 package com.antonio.hundirlaflota;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Entity
-@IdClass(CasillaId.class)
 public class Casilla {
-    @Id
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+
     private int x;
     
-    @Id
 
     private int y;
     
@@ -24,7 +29,7 @@ public class Casilla {
     
     @ManyToOne
     private Barco barco;
-    
+
     private boolean puedebarco;
     private boolean puededisparar;
 

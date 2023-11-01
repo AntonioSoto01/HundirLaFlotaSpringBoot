@@ -108,7 +108,7 @@ public class Jugador1 extends Jugador {
 	}
 
 	public void IAHundido() {
-		getUllTocado().getBarco().puededisparar();
+		// getUllTocado().getBarco().puededisparar();
 		setUllTocado(null);
 
 		setEstado(1);

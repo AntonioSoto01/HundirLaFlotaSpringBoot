@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JuegoService {
-    private final JugadorRepository jugadorRepository;
+        @Autowired
+    private  JugadorRepository jugadorRepository;
     private Jugador jugador;
     private Jugador maquina;
 

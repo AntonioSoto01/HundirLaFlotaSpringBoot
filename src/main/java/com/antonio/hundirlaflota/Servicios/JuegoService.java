@@ -1,18 +1,21 @@
 package com.antonio.hundirlaflota.Servicios;
+
 import org.springframework.stereotype.Service;
 
 import com.antonio.hundirlaflota.Modelos.Jugador;
+import com.antonio.hundirlaflota.Modelos.Jugador1;
+
 import com.antonio.hundirlaflota.Repositorios.JugadorRepository;
 
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 @Service
 public class JuegoService {
-        @Autowired
-    private  JugadorRepository jugadorRepository;
+    @Autowired
+    private JugadorRepository jugadorRepository;
+
     private Jugador jugador;
     private Jugador maquina;
 
@@ -63,10 +66,16 @@ public class JuegoService {
 
     @Transactional
     public void iniciarJuego() {
-        Jugador jugador = new Jugador();
-        setJugador(jugador);
+        iniciarJugador(new Jugador());
+        iniciarJugador(new Jugador1());
+    }
+
+    public Jugador iniciarJugador(Jugador jugador) {
         jugadorService.generarcasillas(jugador);
         jugadorService.generarbarcos(jugador);
         jugadorRepository.save(jugador);
+
+        return jugador;
     }
+
 }

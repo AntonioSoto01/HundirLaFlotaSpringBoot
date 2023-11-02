@@ -5,17 +5,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
 import jakarta.persistence.OneToMany;
 import jakarta.transaction.Transactional;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.DiscriminatorType;
 import lombok.Data;
 
 @Data
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Jugador {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +45,14 @@ public class Jugador {
 		this.terminar = false;
 		ver = false;
 		this.nombre = "jugador";
+	}
+
+	public static String getTocado() {
+        return TOCADO;
+    }
+
+    public static String getFinal() {
+		return FINAL;
 	}
 
 	public int getNbarcos() {
@@ -67,7 +80,7 @@ public class Jugador {
 	}
 
 	public void mostrarMensajeTurno(String tocado) {
-		String mensaje = (tocado.equals(TOCADO)) ? " tiene otro turno" : "";
+		String mensaje = (tocado.equals(getTocado())) ? " tiene otro turno" : "";
 		System.out.println(espacios() + nombre + mensaje + '\n');
 	}
 
@@ -84,14 +97,14 @@ public class Jugador {
 				this.setBarcoshundidos(this.getBarcoshundidos() + 1);
 				if (this.getBarcoshundidos() == this.getNbarcos()) {// Final
 					System.out.println(espacios() + "Todos los barcos hundidos");
-					return FINAL;
+					return getFinal();
 				}
 				// return "Hundido";
 			} else {
 				System.out.println(espacios() + "TOCADO!!!");
 			}
 
-			return TOCADO;
+			return getTocado();
 		} // Agua
 		System.out.println(espacios() + "Agua");
 		IAgua();
@@ -179,9 +192,9 @@ public class Jugador {
 						System.out.print(String.format("%-6s", "B"));// barco visible
  
 					} 
-					else if (maquina && !this.getCasilla(i, j).isPuedebarco()) {
-						System.out.print(String.format("%-6s", "/"));
-					}
+					// else if (maquina && !this.getCasilla(i, j).isPuedebarco()) {
+					// 	System.out.print(String.format("%-6s", "/"));
+					// }
 					else {
 						// if(maquina&&!this.getCasilla(i, j).isPuededisparar()){F
 						// System.out.print(String.format("%-6s", "R"));

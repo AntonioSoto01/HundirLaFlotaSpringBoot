@@ -1,6 +1,10 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.Repositorios;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
+import com.antonio.hundirlaflota.Modelos.Barco;
+
 import java.util.List;
 
 

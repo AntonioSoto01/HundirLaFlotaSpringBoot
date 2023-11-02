@@ -1,4 +1,5 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.Modelos;
+
 
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;

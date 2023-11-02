@@ -1,4 +1,4 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.Servicios;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -6,6 +6,12 @@ import java.util.Scanner;
 import org.hibernate.mapping.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.antonio.hundirlaflota.Modelos.Barco;
+import com.antonio.hundirlaflota.Modelos.Casilla;
+import com.antonio.hundirlaflota.Modelos.Jugador;
+import com.antonio.hundirlaflota.Repositorios.BarcoRepository;
+import com.antonio.hundirlaflota.Repositorios.CasillaRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;

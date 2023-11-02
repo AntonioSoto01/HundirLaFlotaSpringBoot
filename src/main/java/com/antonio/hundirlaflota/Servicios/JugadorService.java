@@ -1,7 +1,12 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.Servicios;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.antonio.hundirlaflota.Modelos.Barco;
+import com.antonio.hundirlaflota.Modelos.Casilla;
+import com.antonio.hundirlaflota.Modelos.Jugador;
+import com.antonio.hundirlaflota.Repositorios.CasillaRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

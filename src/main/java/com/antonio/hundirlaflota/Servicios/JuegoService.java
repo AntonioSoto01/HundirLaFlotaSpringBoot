@@ -2,12 +2,16 @@ package com.antonio.hundirlaflota.Servicios;
 
 import org.springframework.stereotype.Service;
 
+import com.antonio.hundirlaflota.Modelos.Casilla;
 import com.antonio.hundirlaflota.Modelos.Jugador;
 import com.antonio.hundirlaflota.Modelos.Jugador1;
 
 import com.antonio.hundirlaflota.Repositorios.JugadorRepository;
 
 import jakarta.transaction.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,6 +25,8 @@ public class JuegoService {
 
     @Autowired
     private JugadorService jugadorService;
+    @Autowired
+    private Jugador1Service jugador1Service;
 
     public void setJugador(Jugador jugador) {
         this.jugador = jugador;
@@ -38,31 +44,34 @@ public class JuegoService {
         return jugadorRepository.findById(id).orElse(null);
     }
 
-    public Jugador realizarTurno(Jugador jugadorActual) {
+    public Jugador realizarTurno(Jugador jugadorActual, String casilla) {
         String resultadoDisparo = "";
-        jugadorActual.enter();
+        //jugadorActual.enter();
         jugadorActual.mostrarMensajeTurno(resultadoDisparo);
-        resultadoDisparo = jugadorActual.disparado();
+        Casilla casillaDisparada = null;
+        if (jugadorActual instanceof Jugador1) {
+            casillaDisparada = jugador1Service.casillaDisparada((Jugador1) (jugadorActual));
+        } else {
+            casillaDisparada = jugadorService.casillaDisparada(jugadorActual, casilla);
 
+        }
+        if (casillaDisparada != null) {
+            resultadoDisparo = jugadorService.disparado(jugadorActual, casillaDisparada);
+        }
         if (resultadoDisparo.equals("Final")) {
             jugadorActual.setTerminar(true);
-            jugadorRepository.save(jugadorActual);
-            return jugadorActual;
         } else if (resultadoDisparo.equals("Tocado")) {
             jugadorRepository.save(jugadorActual);
-            return jugadorActual;
-        } else {
-            Jugador siguienteJugador = (jugadorActual.equals(jugador)) ? maquina : jugador;
+        } else if (resultadoDisparo.equals("Agua")) {
+            Jugador siguienteJugador = obtenerSiguienteJugador(jugadorActual);
             jugadorRepository.save(jugadorActual);
             jugadorRepository.save(siguienteJugador);
             return siguienteJugador;
         }
+        jugadorRepository.save(jugadorActual);
+        return jugadorActual;
     }
 
-    public Jugador getJugadorPorNombre(String nombre) {
-        Jugador jugador = jugadorRepository.findByNombre(nombre).orElse(null);
-        return jugador;
-    }
 
     @Transactional
     public void iniciarJuego() {
@@ -78,4 +87,19 @@ public class JuegoService {
         return jugador;
     }
 
+    public Jugador obtenerSiguienteJugador(Jugador jugadorActual) {
+        long siguienteJugadorId = (jugadorActual.getId() == 1) ? 2 : 1;
+        Jugador siguienteJugador = jugadorRepository.findById(siguienteJugadorId);
+        return siguienteJugador;
+    }
+
+    public Jugador getJugadorPorId(long id) {
+              Jugador jugador = jugadorRepository.findById(id);
+
+        return jugador;
+    }
+
+    public List<Jugador> getJugadores() {
+        return (List<Jugador>) jugadorRepository.findAll();
+    }
 }

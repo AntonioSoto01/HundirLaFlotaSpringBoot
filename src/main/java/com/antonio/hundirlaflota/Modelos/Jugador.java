@@ -4,6 +4,9 @@ package com.antonio.hundirlaflota.Modelos;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -33,6 +36,7 @@ public class Jugador {
 	private static final int nbarcos = longBarco.length;
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Casilla> tablero = new ArrayList<Casilla>();
+
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Barco> barcos = new ArrayList<Barco>();

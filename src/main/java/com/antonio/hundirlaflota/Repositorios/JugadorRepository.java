@@ -10,8 +10,8 @@ import java.util.Optional;
 
 @Repository
 public interface JugadorRepository extends CrudRepository<Jugador,Long>{
-    Optional<Jugador> findByNombre(String nombre);
-
+   Jugador findByNombre(String nombre);
+Jugador findById(long id);
     Object getOne(long l);
 
 }

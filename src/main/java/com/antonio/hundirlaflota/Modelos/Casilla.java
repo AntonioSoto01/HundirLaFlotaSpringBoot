@@ -1,6 +1,5 @@
 package com.antonio.hundirlaflota.Modelos;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +12,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -21,19 +21,19 @@ public class Casilla {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-    private int x;
-    
+	private int x;
 
-    private int y;
-    
-    private boolean disparado;
-    
-    @ManyToOne
-    private Barco barco;
+	private int y;
 
-    private boolean puedebarco;
-    private boolean puededisparar;
+	private boolean disparado;
 
+	@ManyToOne
+	private Barco barco;
+
+	private boolean puedebarco;
+	private boolean puededisparar;
+
+	private String cadena;
 
 	@Override
 	public String toString() {
@@ -48,6 +48,10 @@ public class Casilla {
 		this.puedebarco = true;
 		this.puededisparar = true;
 		this.barco = null;
+		this.cadena = convertirACadena();
 	}
 
+	public String convertirACadena() {
+		return ((char) ('A' + y) + "" + (x + 1));
+	}
 }

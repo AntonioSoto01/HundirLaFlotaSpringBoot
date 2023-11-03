@@ -41,13 +41,10 @@ public class Jugador {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Barco> barcos = new ArrayList<Barco>();
 	private int barcoshundidos = 0;
-	private boolean terminar;
 	private String nombre;
 	private boolean ver;
 
 	public Jugador() {
-		this.terminar = false;
-		ver = false;
 		this.nombre = "jugador";
 	}
 

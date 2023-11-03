@@ -148,7 +148,7 @@ public class BarcoService {
 				}
 			
 		}}
-		jugador.ver(true);
+		//jugador.ver(true);
 	}
 	
 	

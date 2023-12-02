@@ -58,7 +58,7 @@ public class JugadorService {
 			barcoDisparado.setTocado(barcoDisparado.getTocado() + 1);
 			
 			if (barcoDisparado.getTocado() == barcoDisparado.getLongitud()) {
-				barcoDisparado.setHundido(true);
+barcoService.hundir(barcoDisparado);
 				System.out.println(jugador.espacios() + "HUNDIDO!!!");
 				jugador.IAHundido();
 				jugador.setBarcoshundidos(jugador.getBarcoshundidos() + 1);

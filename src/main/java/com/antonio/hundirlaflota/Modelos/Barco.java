@@ -17,6 +17,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 @Data
 @Entity
 @NoArgsConstructor
@@ -29,24 +30,20 @@ public class Barco {
 	private int tocado = 0;
 	private boolean hundido;
 
-@JsonIgnore
-    @ManyToMany
-    @JoinTable(
-        name = "alrededor_barco",
-        joinColumns = @JoinColumn(name = "barco_id"),
-        inverseJoinColumns = @JoinColumn(name = "casilla_id")
-    )
-    private List<Casilla> alrededor = new ArrayList<>();
+	@JsonIgnore
+	@ManyToMany
+	@JoinTable(name = "alrededor_barco", joinColumns = @JoinColumn(name = "barco_id"), inverseJoinColumns = @JoinColumn(name = "casilla_id"))
+	private List<Casilla> alrededor = new ArrayList<>();
 
+	@JsonIgnore
+	@ManyToMany
+	@JoinTable(name = "posiciones_barco", joinColumns = @JoinColumn(name = "barco_id"), inverseJoinColumns = @JoinColumn(name = "casilla_id"))
+	
+	private List<Casilla> posiciones = new ArrayList<Casilla>();
 
 	public Barco(int ID, int longitud) {
 		super();
 		this.posicion = ID;
 		this.longitud = longitud;
 	}
-
-
-
-
-
 }

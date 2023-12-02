@@ -22,12 +22,9 @@ public class BarcoService {
 	@Autowired
 	private BarcoRepository barcoRepository;
 
-	@Autowired
-	private CasillaRepository casillaRepository;
-
 	@Transactional
 	public void generarbarco(Jugador jugador, Barco barco) {
-		ArrayList<Casilla> posiciones = new ArrayList<Casilla>();
+
 
 		boolean valido;
 
@@ -36,7 +33,7 @@ public class BarcoService {
 
 		int horizontal = 0;
 		do {
-			posiciones.clear();
+			barco.getPosiciones().clear();
 			valido = true;
 			horizontal = (int) (Math.random() * 2);
 
@@ -51,7 +48,7 @@ public class BarcoService {
 			int x1 = x;
 			int y1 = y;
 			while (x1 <= x + barco.getLongitud() - 1 && y1 <= y + barco.getLongitud() - 1 && valido) {
-				posiciones.add(jugador.getCasilla(x1, y1));
+				barco.getPosiciones().add(jugador.getCasilla(x1, y1));
 				if (!jugador.getCasilla(x1, y1).isPuedebarco()) {
 					valido = false;
 				}
@@ -65,7 +62,7 @@ public class BarcoService {
 
 		} while (!valido);
 
-		colocarBarco(barco, posiciones, jugador);
+		colocarBarco(barco, jugador);
 		puedebarco(x, y, horizontal, jugador, barco);
 	}
 
@@ -110,19 +107,20 @@ public class BarcoService {
 			}
 
 		} while (!valido);
-		colocarBarco(barco, posiciones, jugador);
+		colocarBarco(barco, jugador);
 		puedebarco(x, y, horizontal, jugador, barco);
 	}
 
 	@Transactional
-	public void colocarBarco(Barco barco, ArrayList<Casilla> posiciones, Jugador jugador) {
-		for (Casilla casilla : posiciones) {
+	public void colocarBarco(Barco barco, Jugador jugador) {
+		for (Casilla casilla : barco.getPosiciones()) {
 			casilla.setBarco(barco);
 		}
 		barcoRepository.save(barco);
 
 	}
-		public void puedebarco(int x, int y, int horizontal, Jugador jugador, Barco barcor) {
+
+	public void puedebarco(int x, int y, int horizontal, Jugador jugador, Barco barcor) {
 		int aux1 = 0;
 		int aux2 = 0;
 
@@ -140,18 +138,16 @@ public class BarcoService {
 
 						jugador.getCasilla(i, j).setPuedebarco(false);
 
-
-							barcor.getAlrededor().add(jugador.getCasilla(i, j));
-						}
+						barcor.getAlrededor().add(jugador.getCasilla(i, j));
 					}
-				 catch (Exception e) {
+				} catch (Exception e) {
 				}
-			
-		}}
-		//jugador.ver(true);
+
+			}
+		}
+		// jugador.ver(true);
 	}
-	
-	
+
 	@Transactional
 	public void puededisparar(Barco barco) {
 		for (Casilla casilla : barco.getAlrededor()) {
@@ -159,4 +155,11 @@ public class BarcoService {
 		}
 	}
 
+	@Transactional
+	public void hundir(Barco barco) {
+		barco.setHundido(true);
+		for (Casilla casilla : barco.getPosiciones()) {
+			casilla.setHundido(true);
+		}
+	}
 }

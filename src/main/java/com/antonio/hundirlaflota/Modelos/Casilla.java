@@ -26,7 +26,7 @@ public class Casilla {
 	private int y;
 
 	private boolean disparado;
-
+	private boolean hundido;
 	@ManyToOne
 	private Barco barco;
 

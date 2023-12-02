@@ -27,6 +27,7 @@ public class Barco {
 	private int posicion;
 	private int longitud = 2;
 	private int tocado = 0;
+	private boolean hundido;
 
 @JsonIgnore
     @ManyToMany

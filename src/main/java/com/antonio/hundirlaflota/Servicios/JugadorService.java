@@ -50,32 +50,36 @@ public class JugadorService {
 
 	@Transactional
 	public String disparado(Jugador jugador, Casilla casillaDisparada) {
-
 		casillaDisparada.setDisparado(true);
-		if (casillaDisparada.getBarco() != null) {// Tocado
+		Barco barcoDisparado = casillaDisparada.getBarco();
+		
+		if (barcoDisparado != null) { // Tocado
 			jugador.IATocado(casillaDisparada);
-			casillaDisparada.getBarco().setTocado(casillaDisparada.getBarco().getTocado() + 1);
-			if (casillaDisparada.getBarco().getTocado() == casillaDisparada.getBarco().getLongitud()) {// Hundido
+			barcoDisparado.setTocado(barcoDisparado.getTocado() + 1);
+			
+			if (barcoDisparado.getTocado() == barcoDisparado.getLongitud()) {
+				barcoDisparado.setHundido(true);
 				System.out.println(jugador.espacios() + "HUNDIDO!!!");
 				jugador.IAHundido();
 				jugador.setBarcoshundidos(jugador.getBarcoshundidos() + 1);
-				if (jugador.getBarcoshundidos() == jugador.getNbarcos()) {// Final
+				
+				if (jugador.getBarcoshundidos() == jugador.getNbarcos()) { // Final
 					System.out.println(jugador.espacios() + "Todos los barcos hundidos");
 					return Jugador.getFinal();
 				}
-				// return "Hundido";
+				
+				return Jugador.getHundido();
 			} else {
 				System.out.println(jugador.espacios() + "TOCADO!!!");
+				return Jugador.getTocado();
 			}
-
-			return Jugador.getTocado();
-		} // Agua
-		System.out.println(jugador.espacios() + "Agua");
-		jugador.IAgua();
-
-		return "Agua";
+		} else { // Agua
+			System.out.println(jugador.espacios() + "Agua");
+			jugador.IAgua();
+			return "Agua";
+		}
 	}
-
+	
 	@Transactional
 	public Casilla casillaDisparada(Jugador jugador, String cadena) {
 		int x, y;

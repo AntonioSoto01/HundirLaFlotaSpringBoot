@@ -30,6 +30,7 @@ public class Jugador {
 	private long id;
 	private static final String FINAL = "Final";
 	private static final String TOCADO = "Tocado";
+		private static final String HUNDIDO = "hundido";
 	private static final int x = 10;
 	private static final int y = 10;
 	private static final int[] longBarco = { 1, 1, 1, 1, 2, 2, 2, 3, 3, 4 };
@@ -46,6 +47,10 @@ public class Jugador {
 
 	public Jugador() {
 		this.nombre = "jugador";
+	}
+
+	public static String getHundido() {
+		return HUNDIDO;
 	}
 
 	public static String getTocado() {

@@ -40,7 +40,7 @@ public class JuegoService {
         ResultadoTurno resultadoTurno = new ResultadoTurno();
         String resultadoDisparo = "";
         // jugadorActual.enter();
-        jugadorActual.mostrarMensajeTurno(resultadoDisparo);
+
 
         Casilla casillaDisparada = obtenerCasillaDisparada(jugadorActual, casilla);
         if (casillaDisparada == null) {
@@ -48,11 +48,9 @@ public class JuegoService {
             resultadoTurno.setMensajeError("Casilla no válida o ya disparada. Inténtalo de nuevo.");
             return resultadoTurno;
         } else {
-
             resultadoDisparo = jugadorService.disparado(jugadorActual, casillaDisparada);
             resultadoTurno.setResultadoDisparo(resultadoDisparo);
             resultadoTurno.setCasillaDisparada(casillaDisparada);
-        jugadorActual.ver(jugadorActual.getVer());
             if (resultadoDisparo.equals("Final")) {
                 resultadoTurno.setTerminar(true);
             } else if (resultadoDisparo.equals("Agua")) {

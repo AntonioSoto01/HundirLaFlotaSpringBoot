@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.antonio.hundirlaflota.Modelos.Barco;
 import com.antonio.hundirlaflota.Modelos.Casilla;
 import com.antonio.hundirlaflota.Modelos.Jugador;
+import com.antonio.hundirlaflota.Modelos.Jugador1;
 import com.antonio.hundirlaflota.Repositorios.CasillaRepository;
 
 import jakarta.persistence.EntityManager;
@@ -20,6 +21,8 @@ public class JugadorService {
 	private BarcoService barcoService;
 	@Autowired
 	private CasillaRepository casillaRepository;
+	@Autowired
+	private Jugador1Service jugador1Service;
 
 	@Transactional
 	public void generarcasillas(Jugador jugador) {
@@ -52,59 +55,58 @@ public class JugadorService {
 	public String disparado(Jugador jugador, Casilla casillaDisparada) {
 		casillaDisparada.setDisparado(true);
 		Barco barcoDisparado = casillaDisparada.getBarco();
-		
-		if (barcoDisparado != null) { // Tocado
-			jugador.IATocado(casillaDisparada);
+
+		if (barcoDisparado != null) {
+			if (jugador instanceof Jugador1) {
+				jugador1Service.IATocado(casillaDisparada,(Jugador1)jugador);
+			}
 			barcoDisparado.setTocado(barcoDisparado.getTocado() + 1);
-			
 			if (barcoDisparado.getTocado() == barcoDisparado.getLongitud()) {
-barcoService.hundir(barcoDisparado);
-				System.out.println(jugador.espacios() + "HUNDIDO!!!");
-				jugador.IAHundido();
+				barcoService.hundir(barcoDisparado);
+				if (jugador instanceof Jugador1) {
+					jugador1Service.IAHundido((Jugador1)jugador);
+				}
 				jugador.setBarcoshundidos(jugador.getBarcoshundidos() + 1);
-				
 				if (jugador.getBarcoshundidos() == jugador.getNbarcos()) { // Final
-					System.out.println(jugador.espacios() + "Todos los barcos hundidos");
 					return Jugador.getFinal();
 				}
-				
 				return Jugador.getHundido();
 			} else {
-				System.out.println(jugador.espacios() + "TOCADO!!!");
+
 				return Jugador.getTocado();
 			}
 		} else { // Agua
-			System.out.println(jugador.espacios() + "Agua");
-			jugador.IAgua();
+			if (jugador instanceof Jugador1) {
+				jugador1Service.IAgua((Jugador1)jugador);
+			}
 			return "Agua";
 		}
 	}
-	
+
 	@Transactional
 	public Casilla casillaDisparada(Jugador jugador, String cadena) {
 		int x, y;
 
-	
-			try {
-				y = (int) (Character.toUpperCase(cadena.charAt(0))) - 'A';
-				x = Integer.parseInt(cadena.substring(1)) - 1;
-	
-				if (x >= 0 && x < jugador.getX() && y >= 0 && y < jugador.getY() && !jugador.getCasilla(x, y).isDisparado()) {
-				} else {
-					System.out.println("Coordenada inválida o casilla ya disparada. Inténtalo de nuevo.");
-					return null; 
-				}
-			} catch (Exception e) {
-				System.out.println("Entrada inválida. Inténtalo de nuevo.");
-				return null; 
+		try {
+			y = (int) (Character.toUpperCase(cadena.charAt(0))) - 'A';
+			x = Integer.parseInt(cadena.substring(1)) - 1;
+
+			if (x >= 0 && x < jugador.getX() && y >= 0 && y < jugador.getY()
+					&& !jugador.getCasilla(x, y).isDisparado()) {
+			} else {
+				System.out.println("Coordenada inválida o casilla ya disparada. Inténtalo de nuevo.");
+				return null;
 			}
-		
-	
+		} catch (Exception e) {
+			System.out.println("Entrada inválida. Inténtalo de nuevo.");
+			return null;
+		}
+
 		System.out.println("Disparaste a " + jugador.getCasilla(x, y).toString());
 		Casilla casillaDisparada = jugador.getCasilla(x, y);
 		casillaDisparada.setDisparado(true);
 		casillaRepository.save(casillaDisparada);
 		return casillaDisparada;
 	}
-	
+
 }

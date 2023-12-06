@@ -102,7 +102,7 @@ public class JugadorService {
 			return null;
 		}
 
-		System.out.println("Disparaste a " + jugador.getCasilla(x, y).toString());
+
 		Casilla casillaDisparada = jugador.getCasilla(x, y);
 		casillaDisparada.setDisparado(true);
 		casillaRepository.save(casillaDisparada);

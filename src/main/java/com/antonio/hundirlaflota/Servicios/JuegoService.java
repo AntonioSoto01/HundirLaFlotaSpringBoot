@@ -69,11 +69,14 @@ public class JuegoService {
 
     @Transactional
     private Casilla obtenerCasillaDisparada(Jugador jugadorActual, String casilla) {
+        Casilla  casillaDis;
         if (jugadorActual instanceof Jugador1) {
-            return jugador1Service.casillaDisparada((Jugador1) jugadorActual);
+            casillaDis =jugador1Service.casillaDisparada((Jugador1) jugadorActual);
         } else {
-            return jugadorService.casillaDisparada(jugadorActual, casilla);
+            casillaDis=jugadorService.casillaDisparada(jugadorActual, casilla);
         }
+        System.out.println(jugadorActual.getNombre()+"disparaste a "+casillaDis.getCadena());
+        return casillaDis;
     }
 
     @Transactional

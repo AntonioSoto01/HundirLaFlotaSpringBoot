@@ -6,13 +6,14 @@ import com.antonio.hundirlaflota.ResultadoTurno;
 import com.antonio.hundirlaflota.Modelos.Casilla;
 import com.antonio.hundirlaflota.Modelos.Jugador;
 import com.antonio.hundirlaflota.Modelos.Jugador1;
-
+import com.antonio.hundirlaflota.Modelos.Partida;
 import com.antonio.hundirlaflota.Repositorios.JugadorRepository;
+import com.antonio.hundirlaflota.Repositorios.PartidaRepository;
 
 import jakarta.transaction.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,7 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class JuegoService {
     @Autowired
     private JugadorRepository jugadorRepository;
-
+    @Autowired
+    private PartidaRepository partidaRepository;
     @Autowired
     private JugadorService jugadorService;
     @Autowired
@@ -35,12 +37,11 @@ public class JuegoService {
     }
 
     @Transactional
-    public ResultadoTurno realizarTurno(Jugador jugadorActual, String casilla) {
+    public ResultadoTurno realizarTurno(Jugador jugadorActual, String casilla,Partida partida) {
 
         ResultadoTurno resultadoTurno = new ResultadoTurno();
         String resultadoDisparo = "";
         // jugadorActual.enter();
-
 
         Casilla casillaDisparada = obtenerCasillaDisparada(jugadorActual, casilla);
         if (casillaDisparada == null) {
@@ -56,6 +57,7 @@ public class JuegoService {
             } else if (resultadoDisparo.equals("Agua")) {
 
                 Jugador siguienteJugador = obtenerSiguienteJugador(jugadorActual);
+                partida.setTurno(siguienteJugador.getNombre());
                 resultadoTurno.setNombreJugador(siguienteJugador.getNombre());
                 return resultadoTurno;
 
@@ -69,22 +71,28 @@ public class JuegoService {
 
     @Transactional
     private Casilla obtenerCasillaDisparada(Jugador jugadorActual, String casilla) {
-        Casilla  casillaDis;
+        Casilla casillaDis;
         if (jugadorActual instanceof Jugador1) {
-            casillaDis =jugador1Service.casillaDisparada((Jugador1) jugadorActual);
+            casillaDis = jugador1Service.casillaDisparada((Jugador1) jugadorActual);
         } else {
-            casillaDis=jugadorService.casillaDisparada(jugadorActual, casilla);
+            casillaDis = jugadorService.casillaDisparada(jugadorActual, casilla);
         }
-        System.out.println(jugadorActual.getNombre()+"disparaste a "+casillaDis.getCadena());
+        System.out.println(jugadorActual.getNombre() + "disparaste a " + casillaDis.getCadena());
         return casillaDis;
     }
 
     @Transactional
-    public void iniciarJuego() {
-        iniciarJugador(new Jugador());
-        iniciarJugador(new Jugador1());
+    public Partida iniciarJuego() {
+        Partida partida = new Partida(new Jugador(), new Jugador1(), null);
+        partidaRepository.save(partida);
+        Jugador jugador = partida.getJugador1();
+        Jugador maquina = partida.getJugador2();
+       partida.setTurno(jugador.getNombre());
+        iniciarJugador(jugador);
+        iniciarJugador(maquina);
+        return partida;
     }
-
+    @Transactional
     public Jugador iniciarJugador(Jugador jugador) {
         jugadorService.generarcasillas(jugador);
         jugadorService.generarbarcos(jugador);

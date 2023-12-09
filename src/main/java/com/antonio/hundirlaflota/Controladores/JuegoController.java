@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.antonio.hundirlaflota.ResultadoTurno;
 import com.antonio.hundirlaflota.Modelos.Jugador;
+import com.antonio.hundirlaflota.Modelos.Jugador1;
+import com.antonio.hundirlaflota.Modelos.Partida;
+import com.antonio.hundirlaflota.Repositorios.PartidaRepository;
 import com.antonio.hundirlaflota.Servicios.JuegoService;
 
 @RestController
@@ -26,18 +29,20 @@ public class JuegoController {
     private String frontendUrl;
     @Autowired
     private JuegoService juegoService;
-
+    @Autowired
+    private PartidaRepository partidaRepository;
     @GetMapping("/iniciar")
-    public ResponseEntity<List<Jugador>> iniciarJuego() {
-        juegoService.iniciarJuego();
-        List<Jugador> jugadores = juegoService.getJugadores();
+    public ResponseEntity<Partida> iniciarJuego() {
+      
+       Partida jugadores=juegoService.iniciarJuego();
         return ResponseEntity.ok(jugadores);
     }
 
     @PostMapping("/realizar-turno-maquina")
-    public ResponseEntity<ResultadoTurno> realizarTurno() {
-        Jugador jugadorActual = juegoService.getJugadorPorId((long) 2);
-        ResultadoTurno resultadoTurno = juegoService.realizarTurno(jugadorActual, "");
+    public ResponseEntity<ResultadoTurno> realizarTurno(@RequestParam int partidaId) {
+       Partida partida= partidaRepository.findById(partidaId);
+        Jugador jugadorActual = partida.getJugador2();
+        ResultadoTurno resultadoTurno = juegoService.realizarTurno(jugadorActual, "",partida);
         if (resultadoTurno.isError()) {
             return ResponseEntity.badRequest().body(resultadoTurno);
         } else {
@@ -46,9 +51,10 @@ public class JuegoController {
     }
 
     @PostMapping("/realizar-turno-jugador")
-    public ResponseEntity<ResultadoTurno> realizarTurno(@RequestParam String casilla) {
-        Jugador jugadorActual = juegoService.getJugadorPorId((long) 1);
-        ResultadoTurno resultadoTurno = juegoService.realizarTurno(jugadorActual, casilla);
+    public ResponseEntity<ResultadoTurno> realizarTurno(@RequestParam String casilla,@RequestParam int partidaId) {
+             Partida partida= partidaRepository.findById(partidaId);
+        Jugador jugadorActual = partida.getJugador1();
+        ResultadoTurno resultadoTurno = juegoService.realizarTurno(jugadorActual, casilla,partida);
         System.out.println("id siguiente jugador " + resultadoTurno.getNombreJugador());
         if (resultadoTurno.isError()) {
             return ResponseEntity.badRequest().body(resultadoTurno);

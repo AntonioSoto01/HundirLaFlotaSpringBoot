@@ -54,6 +54,7 @@ public class JuegoService {
             resultadoTurno.setCasillaDisparada(casillaDisparada);
             if (resultadoDisparo.equals("Final")) {
                 resultadoTurno.setTerminar(true);
+                partida.setTerminar(true);
             } else if (resultadoDisparo.equals("Agua")) {
 
                 Jugador siguienteJugador = obtenerSiguienteJugador(jugadorActual);
@@ -83,7 +84,7 @@ public class JuegoService {
 
     @Transactional
     public Partida iniciarJuego() {
-        Partida partida = new Partida(new Jugador(), new Jugador1(), null);
+        Partida partida = new Partida(new Jugador(), new Jugador1(), null,false);
         partidaRepository.save(partida);
         Jugador jugador = partida.getJugador1();
         Jugador maquina = partida.getJugador2();

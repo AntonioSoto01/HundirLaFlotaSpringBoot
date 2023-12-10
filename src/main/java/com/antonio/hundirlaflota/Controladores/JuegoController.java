@@ -19,6 +19,8 @@ import com.antonio.hundirlaflota.Modelos.Partida;
 import com.antonio.hundirlaflota.Repositorios.PartidaRepository;
 import com.antonio.hundirlaflota.Servicios.JuegoService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/api/juego")
 
@@ -32,10 +34,13 @@ public class JuegoController {
     @Autowired
     private PartidaRepository partidaRepository;
     @GetMapping("/iniciar")
-    public ResponseEntity<Partida> iniciarJuego() {
+    public ResponseEntity<Partida> iniciarJuego(HttpServletRequest request) {
       
-       Partida jugadores=juegoService.iniciarJuego();
-        return ResponseEntity.ok(jugadores);
+       Partida partida=juegoService.iniciarJuego();
+       partida.setIp(request.getRemoteAddr());
+       partidaRepository.save(partida);
+           System.out.println(request.getRemoteAddr());
+        return ResponseEntity.ok(partida);
     }
 
     @PostMapping("/realizar-turno-maquina")
@@ -62,5 +67,11 @@ public class JuegoController {
             return ResponseEntity.ok(resultadoTurno);
         }
     }
+@GetMapping("/cargar")
+public Partida cargarPartida (HttpServletRequest request) {
+    Partida partida=partidaRepository.findByIpAndTerminar(request.getRemoteAddr(),false);
+
+    return partida;
+}
 
 }

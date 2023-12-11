@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,14 +35,18 @@ public class JuegoController {
     @Autowired
     private PartidaRepository partidaRepository;
     @GetMapping("/iniciar")
-    public ResponseEntity<Partida> iniciarJuego(HttpServletRequest request) {
+    public ResponseEntity<Partida> iniciarJuego(@RequestHeader(value = "X-Forwarded-For", required = false) String forwardedFor,
+                                                HttpServletRequest request) {
+        String clientIpAddress = forwardedFor != null ? forwardedFor : request.getRemoteAddr();
       
-       Partida partida=juegoService.iniciarJuego();
-       partida.setIp(request.getRemoteAddr());
-       partidaRepository.save(partida);
-           System.out.println(request.getRemoteAddr());
+        Partida partida = juegoService.iniciarJuego();
+        partida.setIp(clientIpAddress);
+        partidaRepository.save(partida);
+    
+        System.out.println(clientIpAddress);
         return ResponseEntity.ok(partida);
     }
+    
 
     @PostMapping("/realizar-turno-maquina")
     public ResponseEntity<ResultadoTurno> realizarTurno(@RequestParam int partidaId) {
@@ -68,10 +73,12 @@ public class JuegoController {
         }
     }
 @GetMapping("/cargar")
-public Partida cargarPartida (HttpServletRequest request) {
-    Partida partida=partidaRepository.findByIpAndTerminar(request.getRemoteAddr(),false);
-
+public Partida cargarPartida(@RequestHeader(value = "X-Forwarded-For", required = false) String forwardedFor,
+                             HttpServletRequest request) {
+    String clientIpAddress = forwardedFor != null ? forwardedFor : request.getRemoteAddr();
+    Partida partida = partidaRepository.findByIpAndTerminar(clientIpAddress, false);
     return partida;
 }
+
 
 }

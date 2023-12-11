@@ -14,7 +14,6 @@ import jakarta.transaction.Transactional;
 
 import java.util.List;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
@@ -37,7 +36,7 @@ public class JuegoService {
     }
 
     @Transactional
-    public ResultadoTurno realizarTurno(Jugador jugadorActual, String casilla,Partida partida) {
+    public ResultadoTurno realizarTurno(Jugador jugadorActual, String casilla, Partida partida) {
 
         ResultadoTurno resultadoTurno = new ResultadoTurno();
         String resultadoDisparo = "";
@@ -57,7 +56,7 @@ public class JuegoService {
                 partida.setTerminar(true);
             } else if (resultadoDisparo.equals("Agua")) {
 
-                Jugador siguienteJugador = obtenerSiguienteJugador(jugadorActual);
+                Jugador siguienteJugador = obtenerSiguienteJugador(jugadorActual, partida);
                 partida.setTurno(siguienteJugador.getNombre());
                 resultadoTurno.setNombreJugador(siguienteJugador.getNombre());
                 return resultadoTurno;
@@ -84,15 +83,16 @@ public class JuegoService {
 
     @Transactional
     public Partida iniciarJuego() {
-        Partida partida = new Partida(new Jugador(), new Jugador1(), null,false);
+        Partida partida = new Partida(new Jugador(), new Jugador1(), null, false);
         partidaRepository.save(partida);
         Jugador jugador = partida.getJugador1();
         Jugador maquina = partida.getJugador2();
-       partida.setTurno(jugador.getNombre());
+        partida.setTurno(jugador.getNombre());
         iniciarJugador(jugador);
         iniciarJugador(maquina);
         return partida;
     }
+
     @Transactional
     public Jugador iniciarJugador(Jugador jugador) {
         jugadorService.generarcasillas(jugador);
@@ -103,11 +103,10 @@ public class JuegoService {
     }
 
     @Transactional
-    public Jugador obtenerSiguienteJugador(Jugador jugadorActual) {
+    public Jugador obtenerSiguienteJugador(Jugador jugadorActual, Partida partida) {
+        Jugador siguienteJugador;
+        siguienteJugador = (jugadorActual == partida.getJugador1()) ? partida.getJugador2() : partida.getJugador1();
 
-        long siguienteJugadorId = (jugadorActual.getId() == 1) ? 2 : 1;
-
-        Jugador siguienteJugador = jugadorRepository.findById(siguienteJugadorId);
         return siguienteJugador;
     }
 

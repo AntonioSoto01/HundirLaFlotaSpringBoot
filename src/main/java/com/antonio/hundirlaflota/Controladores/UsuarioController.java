@@ -16,6 +16,8 @@
 package com.antonio.hundirlaflota.Controladores;
 
 import com.antonio.hundirlaflota.Modelos.Usuario;
+import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,12 +25,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UsuarioController {
+    @Autowired
+    UsuarioRepository usuarioRepository;
+
     @RequestMapping("/user")
     public Usuario user(@AuthenticationPrincipal OAuth2User principal) {
         Usuario usuario = new Usuario();
-        usuario.setNombre( principal.getAttribute("name"));
+        System.out.println(principal);
+        usuario.setNombre(principal.getAttribute("name"));
         usuario.setEmail(principal.getAttribute("email"));
-        System.out.println(usuario);
+        usuarioRepository.save(usuario);
+        System.out.println("usuario" + usuario);
         return usuario;
     }
 }

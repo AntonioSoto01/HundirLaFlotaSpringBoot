@@ -30,12 +30,25 @@ public class UsuarioController {
 
     @RequestMapping("/user")
     public Usuario user(@AuthenticationPrincipal OAuth2User principal) {
-        Usuario usuario = new Usuario();
-        System.out.println(principal);
-        usuario.setNombre(principal.getAttribute("name"));
-        usuario.setEmail(principal.getAttribute("email"));
+        String googleId = principal.getAttribute("sub");
+        String email = principal.getAttribute("email");
+        String nombre = principal.getAttribute("name");
+
+        // Buscar al usuario por su Google ID en la base de datos
+        Usuario usuario = usuarioRepository.findByGoogleId(googleId);
+
+        if (usuario == null) {
+            // Si el usuario no existe, crear un nuevo Usuario con el Google ID, email y nombre
+            usuario = new Usuario();
+            usuario.setGoogleId(googleId);
+        }
+
+        // Actualizar el email y nombre del usuario en la base de datos
+        usuario.setEmail(email);
+        usuario.setNombre(nombre);
+
+        // Guardar o actualizar el usuario en la base de datos
         usuarioRepository.save(usuario);
-        System.out.println("usuario" + usuario);
         return usuario;
     }
 }

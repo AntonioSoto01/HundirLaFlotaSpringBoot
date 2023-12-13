@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -27,10 +26,14 @@ public class SecurityConfiguration {
                         exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
                 .csrf().disable()
-                .logout(logout ->
-                        logout.logoutSuccessUrl("/").permitAll()
+                .logout(l -> l
+                        .logoutUrl("/api/logout")
+                        .logoutSuccessUrl("/").permitAll()
                 )
-                .oauth2Login(Customizer.withDefaults());
+                .oauth2Login(oauth2 -> oauth2
+                        .defaultSuccessUrl("/"+"?success=true")
+                        .failureUrl("/"+"?fail=true")
+                );
         return http.build();
     }
     @Bean

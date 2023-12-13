@@ -17,5 +17,6 @@ public class Usuario {
     public String nombre;
     public String email;
     public String contraseña;
+    public String googleId;
 
 }

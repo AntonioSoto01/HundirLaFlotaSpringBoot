@@ -16,23 +16,23 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/index.html", "/", "/home", "/login", "/api/**","/**.css", "/**.js").permitAll()
-                                .requestMatchers( HttpMethod.POST, "/api/**").permitAll()
-                                .anyRequest().authenticated()
-                )
-                .exceptionHandling(exceptionHandling ->
-                        exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                )
-                .csrf().disable()
+        http.authorizeHttpRequests(authorizeRequests ->
+                authorizeRequests
+                        .requestMatchers("/**","/index.html", "/", "/home", "/login", "/api/**", "/**.css", "/**.js").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
+                        .anyRequest().authenticated()
+        )
+        .exceptionHandling(exceptionHandling ->
+                exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+        )
+        .csrf(csrf -> csrf.disable())
                 .logout(l -> l
-                        .logoutUrl("/api/logout")
-                        .logoutSuccessUrl("/").permitAll()
+                                .logoutUrl("/api/logout")
+                                .logoutSuccessUrl("/").permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl("/"+"?success=true")
-                        .failureUrl("/"+"?fail=true")
+                                .defaultSuccessUrl("/" + "?success=true")
+                                .failureUrl("/" + "?fail=true")
                 );
         return http.build();
     }

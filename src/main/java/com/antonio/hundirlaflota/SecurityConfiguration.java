@@ -1,5 +1,7 @@
 package com.antonio.hundirlaflota;
 
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,11 +11,19 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration {
-
+public class SecurityConfiguration  {
+    @Value("${frontend.url}")
+    private String frontendUrl;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests ->
@@ -28,12 +38,13 @@ public class SecurityConfiguration {
         .csrf(csrf -> csrf.disable())
                 .logout(l -> l
                                 .logoutUrl("/api/logout")
-                                .logoutSuccessUrl("/").permitAll()
+                                .logoutSuccessUrl(frontendUrl+"/").permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                                .defaultSuccessUrl("/" + "?success=true")
-                                .failureUrl("/" + "?fail=true")
+                                .defaultSuccessUrl(frontendUrl+"/?success=true")
+                                .failureUrl(frontendUrl+"/?fail=true")
                 );
+                
         return http.build();
     }
     @Bean

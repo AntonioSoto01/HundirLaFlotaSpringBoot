@@ -1,0 +1,5 @@
+frontend.url=https://misitio.es/
+server.forward-headers-strategy=native
+server.tomcat.remoteip.remote-ip-header=x-forwarded-for
+server.tomcat.remoteip.protocol-header=x-forwarded-proto
+spring.security.oauth2.client.registration.google.redirect-uri=https://misitio.es/login/oauth2/code/google

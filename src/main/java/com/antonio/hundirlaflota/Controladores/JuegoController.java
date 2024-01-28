@@ -16,7 +16,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/juego")
@@ -35,7 +34,6 @@ public class JuegoController {
 
     @GetMapping("/iniciar")
     public ResponseEntity<Partida> iniciarJuego(@AuthenticationPrincipal OAuth2User principal,
-                                                @RequestHeader(value = "X-Forwarded-For", required = false) String forwardedFor,
                                                 HttpServletRequest request) {
 
         Partida partida = juegoService.iniciarJuego();
@@ -51,7 +49,7 @@ public class JuegoController {
             }
         }
 
-        String clientIpAddress = forwardedFor != null ? forwardedFor : request.getRemoteAddr();
+        String clientIpAddress = request.getRemoteAddr();
         partida.setIp(clientIpAddress);
         partidaRepository.save(partida);
 
@@ -87,7 +85,6 @@ public class JuegoController {
 
     @GetMapping("/cargar")
     public Partida cargarPartida(@AuthenticationPrincipal OAuth2User principal,
-                                 @RequestHeader(value = "X-Forwarded-For", required = false) String forwardedFor,
                                  HttpServletRequest request) {
 
         if (principal != null) {
@@ -97,7 +94,7 @@ public class JuegoController {
             if (usuario != null) {
                 List<Partida> partidasNoTerminadas = usuario.getPartidas().stream()
                         .filter(partida -> !partida.getTerminar())
-                        .collect(Collectors.toList());
+                        .toList();
 
                 if (!partidasNoTerminadas.isEmpty()) {
 
@@ -107,8 +104,7 @@ public class JuegoController {
                 }
             }
         }
-        String clientIpAddress = forwardedFor != null ? forwardedFor : request.getRemoteAddr();
-        return partidaRepository.findByIpAndTerminar(clientIpAddress, false);
+        return partidaRepository.findByIpAndTerminar(request.getRemoteAddr(), false);
     }
 
 

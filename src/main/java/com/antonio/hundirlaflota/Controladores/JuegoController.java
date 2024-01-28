@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,20 +32,15 @@ public class JuegoController {
     private UsuarioRepository usuarioRepository;
 
     @GetMapping("/iniciar")
-    public ResponseEntity<Partida> iniciarJuego(@AuthenticationPrincipal OAuth2User principal,
+    public ResponseEntity<Partida> iniciarJuego(@AuthenticationPrincipal Usuario usuario,
                                                 HttpServletRequest request) {
 
         Partida partida = juegoService.iniciarJuego();
 
-        if (principal != null) {
-            String googleId = principal.getAttribute("sub");
-            Usuario usuario = usuarioRepository.findByGoogleId(googleId);
-
-            if (usuario != null) {
-                usuario.getPartidas().add(partida);
-                partidaRepository.save(partida);
-                return ResponseEntity.ok(partida);
-            }
+        if (usuario != null) {
+            usuario.getPartidas().add(partida);
+            partidaRepository.save(partida);
+            return ResponseEntity.ok(partida);
         }
 
         String clientIpAddress = request.getRemoteAddr();
@@ -84,24 +78,19 @@ public class JuegoController {
     }
 
     @GetMapping("/cargar")
-    public Partida cargarPartida(@AuthenticationPrincipal OAuth2User principal,
+    public Partida cargarPartida(@AuthenticationPrincipal Usuario usuario,
                                  HttpServletRequest request) {
 
-        if (principal != null) {
-            String googleId = principal.getAttribute("sub");
-            Usuario usuario = usuarioRepository.findByGoogleId(googleId);
+        if (usuario != null) {
+            List<Partida> partidasNoTerminadas = usuario.getPartidas().stream()
+                    .filter(partida -> !partida.getTerminar())
+                    .toList();
 
-            if (usuario != null) {
-                List<Partida> partidasNoTerminadas = usuario.getPartidas().stream()
-                        .filter(partida -> !partida.getTerminar())
-                        .toList();
+            if (!partidasNoTerminadas.isEmpty()) {
 
-                if (!partidasNoTerminadas.isEmpty()) {
-
-                    return partidasNoTerminadas.get(0);
-                } else {
-                    return null;
-                }
+                return partidasNoTerminadas.get(0);
+            } else {
+                return null;
             }
         }
         return partidaRepository.findByIpAndTerminar(request.getRemoteAddr(), false);

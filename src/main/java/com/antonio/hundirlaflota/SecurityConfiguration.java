@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -21,16 +22,20 @@ import org.springframework.web.client.RestTemplate;
 public class SecurityConfiguration {
     @Value("${frontend.url}")
     private String frontendUrl;
-    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSucessHandler;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorizeRequests ->
+        http.
+                authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/**", "/index.html", "/", "/home", "/login", "/api/**", "/**.css", "/**.js").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
                                 .anyRequest().authenticated()
                 )
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
@@ -41,12 +46,14 @@ public class SecurityConfiguration {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl(frontendUrl + "/?success=true")
+                        .successHandler(oAuth2AuthenticationSucessHandler)
                         .failureHandler((request, response, exception) -> {
                             System.out.println(exception.getMessage());
                             response.sendRedirect(frontendUrl + "/?fail=true");
                         })
 
                 );
+
 
         return http.build();
     }

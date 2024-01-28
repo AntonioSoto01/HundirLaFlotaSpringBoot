@@ -1,17 +1,11 @@
 package com.antonio.hundirlaflota.Modelos;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -23,9 +17,9 @@ public class Usuario {
     public String nombre;
     public String email;
     public String contraseña;
-    public String googleId;
-    @ManyToMany
-  	@JoinTable(name = "usuario_partidas", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "partida_id"))
-	private List<Partida> partidas = new ArrayList<>();
+    public String proveedor;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usuario_partidas", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "partida_id"))
+    private List<Partida> partidas = new ArrayList<>();
 
 }

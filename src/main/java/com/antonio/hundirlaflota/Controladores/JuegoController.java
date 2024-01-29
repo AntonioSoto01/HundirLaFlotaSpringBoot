@@ -36,10 +36,11 @@ public class JuegoController {
                                                 HttpServletRequest request) {
 
         Partida partida = juegoService.iniciarJuego();
-
         if (usuario != null) {
             usuario.getPartidas().add(partida);
             partidaRepository.save(partida);
+            usuarioRepository.save(usuario);
+            System.out.println(usuario);
             return ResponseEntity.ok(partida);
         }
 

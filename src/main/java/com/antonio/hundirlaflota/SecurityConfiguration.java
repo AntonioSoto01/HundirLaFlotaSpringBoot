@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -24,6 +25,7 @@ public class SecurityConfiguration {
     private String frontendUrl;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSucessHandler;
     private final JwtTokenProvider jwtTokenProvider;
+    private final HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,7 +37,7 @@ public class SecurityConfiguration {
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), BasicAuthenticationFilter.class)
-
+                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
@@ -45,7 +47,8 @@ public class SecurityConfiguration {
                         .logoutSuccessUrl(frontendUrl + "/").permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl(frontendUrl + "/?success=true")
+                        .authorizationEndpoint(config -> config
+                                .authorizationRequestRepository(cookieAuthorizationRequestRepository))
                         .successHandler(oAuth2AuthenticationSucessHandler)
                         .failureHandler((request, response, exception) -> {
                             System.out.println(exception.getMessage());

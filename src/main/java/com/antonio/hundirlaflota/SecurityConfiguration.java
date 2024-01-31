@@ -14,7 +14,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.client.RestTemplate;
 
 
 @Configuration
@@ -30,16 +29,16 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.
-                authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/**", "/index.html", "/", "/home", "/login", "/api/**", "/**.css", "/**.js").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
-                                .anyRequest().authenticated()
+                authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("/**", "/home", "/login", "/api/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), BasicAuthenticationFilter.class)
-                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exceptionHandling ->
-                        exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                .sessionManagement(customizer -> customizer.
+                        sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exceptionHandling -> exceptionHandling.
+                        authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .logout(l -> l
@@ -56,13 +55,7 @@ public class SecurityConfiguration {
                         })
 
                 );
-
-
         return http.build();
     }
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 }

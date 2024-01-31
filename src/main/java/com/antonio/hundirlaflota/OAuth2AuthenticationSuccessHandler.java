@@ -4,23 +4,21 @@ import com.antonio.hundirlaflota.Modelos.Usuario;
 import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
 
 @Component
 @RequiredArgsConstructor
@@ -33,53 +31,71 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) throws IOException {
+                                        Authentication authentication) throws IOException {
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-        OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
         String providerName = oauthToken.getAuthorizedClientRegistrationId();
-        String email = oauth2User.getAttribute("email");
-        String name = oauth2User.getAttribute("name");
-        Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
-        if (usuario.isPresent()) {
-            if (!usuario.get().getProveedor().equals(providerName)) {
-
-            } else {
-
-            }
-
-        } else {
-
-            Usuario usuario2 = new Usuario();
-            usuario2.setNombre(name);
-            usuario2.setEmail(email);
-            usuario2.setProveedor(providerName);
-            if (usuario2.getProveedor().equals("github") && usuario2.getEmail() == null) {
-                usuario2.setEmail(findGithubEmail());
-            }
-            usuarioRepository.save(usuario2);
+        String email = oauthToken.getPrincipal().getAttribute("email");
+        String name = oauthToken.getPrincipal().getAttribute("name");
+        // If email is null and provider is GitHub, try to find GitHub email
+        if (email == null && "github".equals(providerName)) {
+            email = findGithubEmail();
         }
+
+        handleUserAuthentication(email, name, providerName, response);
+    }
+
+    private void handleUserAuthentication(String email, String name, String providerName,
+                                          HttpServletResponse response) throws IOException {
+        Optional<Usuario> existingUser = usuarioRepository.findByEmail(email);
+
+        if (existingUser.isPresent()) {
+            Usuario usuario = existingUser.get();
+
+            if (!usuario.getProveedor().equals(providerName)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+                SecurityContextHolder.clearContext();
+
+                response.sendRedirect(frontendUrl + "/?fail=true");
+
+                return;
+            } else {
+                // Handle scenario where user is already registered with the same provider
+            }
+        } else {
+            // User does not exist, create and save a new user
+            Usuario newUser = new Usuario();
+            newUser.setNombre(name);
+            newUser.setEmail(email);
+            newUser.setProveedor(providerName);
+            usuarioRepository.save(newUser);
+        }
+
+        // Generate JWT token and redirect
         String jwtToken = jwtTokenProvider.generateToken(email);
         response.sendRedirect(frontendUrl + "/token/?token=" + jwtToken);
     }
 
     private String findGithubEmail() {
-   
+        // GitHub API call to retrieve user emails
         List<GitHubEmail> githubEmails = webClient.get()
+                .uri("https://api.github.com/user/emails")
+                .attributes(clientRegistrationId("github"))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<GitHubEmail>>() {})
+                .bodyToMono(new ParameterizedTypeReference<List<GitHubEmail>>() {
+                })
                 .block();
 
         if (githubEmails != null) {
-            for (GitHubEmail githubEmail : githubEmails) {
-                if (githubEmail.isPrimary()) {
-                    return githubEmail.getEmail();
-                }
-            }
+            return githubEmails.stream()
+                    .filter(GitHubEmail::isPrimary)
+                    .map(GitHubEmail::getEmail)
+                    .findFirst()
+                    .orElse(null);
         }
-   
 
-    return null;
-}
+        return null;
+    }
 
 
 }

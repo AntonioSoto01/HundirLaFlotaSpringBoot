@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -55,9 +56,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
                 SecurityContextHolder.clearContext();
-
-                response.sendRedirect(frontendUrl + "/?fail=true");
-
+                try {
+                    throw new AppException("This email is associated with " + providerName, HttpStatus.NOT_FOUND);
+                } catch (Exception e) {
+                    response.sendRedirect(frontendUrl + "/token/?error=" + e.getLocalizedMessage());
+                }
                 return;
             } else {
                 // Handle scenario where user is already registered with the same provider

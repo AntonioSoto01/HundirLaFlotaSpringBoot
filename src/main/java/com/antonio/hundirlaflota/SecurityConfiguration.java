@@ -23,6 +23,7 @@ public class SecurityConfiguration {
     @Value("${frontend.url}")
     private String frontendUrl;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSucessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final JwtTokenProvider jwtTokenProvider;
     private final HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository;
 
@@ -49,10 +50,7 @@ public class SecurityConfiguration {
                         .authorizationEndpoint(config -> config
                                 .authorizationRequestRepository(cookieAuthorizationRequestRepository))
                         .successHandler(oAuth2AuthenticationSucessHandler)
-                        .failureHandler((request, response, exception) -> {
-                            System.out.println(exception.getMessage());
-                            response.sendRedirect(frontendUrl + "/?fail=true");
-                        })
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
 
                 );
         return http.build();

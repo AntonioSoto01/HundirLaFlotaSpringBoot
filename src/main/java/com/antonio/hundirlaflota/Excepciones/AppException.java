@@ -1,4 +1,4 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.Excepciones;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -12,5 +12,5 @@ public class AppException extends RuntimeException {
         super(message);
         this.status = status;
     }
-    
+
 }

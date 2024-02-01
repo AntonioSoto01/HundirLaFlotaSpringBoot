@@ -1,7 +1,10 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.config.oauth2;
 
+import com.antonio.hundirlaflota.Excepciones.AppException;
 import com.antonio.hundirlaflota.Modelos.Usuario;
 import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;
+import com.antonio.hundirlaflota.config.jwt.JwtTokenProvider;
+import com.antonio.hundirlaflota.dto.GitHubEmail;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +60,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
                 SecurityContextHolder.clearContext();
                 try {
-                    throw new AppException("This email is associated with " + providerName, HttpStatus.NOT_FOUND);
+                    throw new AppException("This email is associated with " + usuario.getProveedor(), HttpStatus.NOT_FOUND);
                 } catch (Exception e) {
                     response.sendRedirect(frontendUrl + "/token/?error=" + e.getLocalizedMessage());
                 }

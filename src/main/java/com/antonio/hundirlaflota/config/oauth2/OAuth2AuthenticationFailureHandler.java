@@ -1,4 +1,4 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.config.oauth2;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

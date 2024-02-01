@@ -1,6 +1,7 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.config.oauth2;
 
 
+import com.antonio.hundirlaflota.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;

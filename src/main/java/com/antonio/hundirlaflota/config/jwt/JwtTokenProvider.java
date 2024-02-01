@@ -1,4 +1,4 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.config.jwt;
 
 import com.antonio.hundirlaflota.Modelos.Usuario;
 import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;

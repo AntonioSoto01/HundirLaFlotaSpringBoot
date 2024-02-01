@@ -1,5 +1,6 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.Excepciones;
 
+import com.antonio.hundirlaflota.Excepciones.AppException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

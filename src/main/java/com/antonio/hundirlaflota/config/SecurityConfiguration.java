@@ -1,6 +1,11 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.config;
 
 
+import com.antonio.hundirlaflota.config.jwt.JwtAuthenticationFilter;
+import com.antonio.hundirlaflota.config.jwt.JwtTokenProvider;
+import com.antonio.hundirlaflota.config.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.antonio.hundirlaflota.config.oauth2.OAuth2AuthenticationFailureHandler;
+import com.antonio.hundirlaflota.config.oauth2.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

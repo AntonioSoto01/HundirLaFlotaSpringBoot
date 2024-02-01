@@ -1,4 +1,4 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.dto;
 
 import com.antonio.hundirlaflota.Modelos.Casilla;
 

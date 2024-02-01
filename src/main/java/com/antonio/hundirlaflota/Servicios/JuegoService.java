@@ -6,7 +6,7 @@ import com.antonio.hundirlaflota.Modelos.Jugador1;
 import com.antonio.hundirlaflota.Modelos.Partida;
 import com.antonio.hundirlaflota.Repositorios.JugadorRepository;
 import com.antonio.hundirlaflota.Repositorios.PartidaRepository;
-import com.antonio.hundirlaflota.ResultadoTurno;
+import com.antonio.hundirlaflota.dto.ResultadoTurno;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

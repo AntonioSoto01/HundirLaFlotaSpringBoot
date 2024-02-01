@@ -1,4 +1,4 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

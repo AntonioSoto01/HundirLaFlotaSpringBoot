@@ -1,4 +1,4 @@
-package com.antonio.hundirlaflota;
+package com.antonio.hundirlaflota.config;
 
 
 import org.springframework.context.annotation.Bean;

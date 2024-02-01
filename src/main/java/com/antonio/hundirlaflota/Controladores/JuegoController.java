@@ -5,7 +5,7 @@ import com.antonio.hundirlaflota.Modelos.Partida;
 import com.antonio.hundirlaflota.Modelos.Usuario;
 import com.antonio.hundirlaflota.Repositorios.PartidaRepository;
 import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;
-import com.antonio.hundirlaflota.ResultadoTurno;
+import com.antonio.hundirlaflota.dto.ResultadoTurno;
 import com.antonio.hundirlaflota.Servicios.JuegoService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;

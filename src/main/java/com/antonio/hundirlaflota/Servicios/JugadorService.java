@@ -63,6 +63,8 @@ public class JugadorService {
 			barcoDisparado.setTocado(barcoDisparado.getTocado() + 1);
 			if (barcoDisparado.getTocado() == barcoDisparado.getLongitud()) {
 				barcoService.hundir(barcoDisparado);
+				barcoService.puededisparar(barcoDisparado);
+
 				if (jugador instanceof Jugador1) {
 					jugador1Service.IAHundido((Jugador1)jugador);
 				}

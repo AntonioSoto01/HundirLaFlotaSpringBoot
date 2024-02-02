@@ -9,11 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface PartidaRepository extends CrudRepository<Partida, Long> {
     Partida findById(long id);
 
-    Partida findByIpAndTerminar(String ip, Boolean terminar);
-
     Partida findByTokenPartida(String ip);
-
-    ;
 
 
 }

@@ -1,11 +1,6 @@
 package com.antonio.hundirlaflota.Modelos;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -19,15 +14,17 @@ public class Partida {
     @ManyToOne
     Jugador jugador2;
     String turno;
-    String ip;
+    String tokenPartida;
     Boolean terminar;
-    public Partida    (    Jugador jugador1,Jugador jugador2,String turno,boolean terminar   ){
-        this.jugador1=jugador1;
-        this.jugador2=jugador2;
-        this.turno=turno;
-        this.terminar=terminar;
+
+    public Partida(Jugador jugador1, Jugador jugador2, String turno, boolean terminar) {
+        this.jugador1 = jugador1;
+        this.jugador2 = jugador2;
+        this.turno = turno;
+        this.terminar = terminar;
     }
-        public Partida    ( ){
+
+    public Partida() {
 
     }
 }

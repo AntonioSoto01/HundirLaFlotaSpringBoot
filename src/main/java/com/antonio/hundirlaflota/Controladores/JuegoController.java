@@ -5,10 +5,11 @@ import com.antonio.hundirlaflota.Modelos.Partida;
 import com.antonio.hundirlaflota.Modelos.Usuario;
 import com.antonio.hundirlaflota.Repositorios.PartidaRepository;
 import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;
-import com.antonio.hundirlaflota.dto.ResultadoTurno;
 import com.antonio.hundirlaflota.Servicios.JuegoService;
+import com.antonio.hundirlaflota.config.jwt.JwtTokenProvider;
+import com.antonio.hundirlaflota.dto.ResultadoTurno;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,16 +21,17 @@ import java.util.List;
 @RequestMapping("/api/juego")
 
 @CrossOrigin(origins = "${frontend.url}")
-
+@RequiredArgsConstructor
 public class JuegoController {
     @Value("${frontend.url}")
     private String frontendUrl;
-    @Autowired
-    private JuegoService juegoService;
-    @Autowired
-    private PartidaRepository partidaRepository;
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+
+    private final JuegoService juegoService;
+
+    private final PartidaRepository partidaRepository;
+
+    private final UsuarioRepository usuarioRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/iniciar")
     public ResponseEntity<Partida> iniciarJuego(@AuthenticationPrincipal Usuario usuario,
@@ -43,12 +45,10 @@ public class JuegoController {
             System.out.println(usuario);
             return ResponseEntity.ok(partida);
         }
-
-        String clientIpAddress = request.getRemoteAddr();
-        partida.setIp(clientIpAddress);
+        String token = jwtTokenProvider.generateToken(String.valueOf(partida.getId()));
+        partida.setTokenPartida(token);
         partidaRepository.save(partida);
 
-        System.out.println(clientIpAddress);
         return ResponseEntity.ok(partida);
     }
 
@@ -79,8 +79,7 @@ public class JuegoController {
     }
 
     @GetMapping("/cargar")
-    public Partida cargarPartida(@AuthenticationPrincipal Usuario usuario,
-                                 HttpServletRequest request) {
+    public Partida cargarPartida(@AuthenticationPrincipal Usuario usuario, @RequestParam String token) {
 
         if (usuario != null) {
             List<Partida> partidasNoTerminadas = usuario.getPartidas().stream()
@@ -94,7 +93,7 @@ public class JuegoController {
                 return null;
             }
         }
-        return partidaRepository.findByIpAndTerminar(request.getRemoteAddr(), false);
+        return partidaRepository.findByTokenPartida(token);
     }
 
 

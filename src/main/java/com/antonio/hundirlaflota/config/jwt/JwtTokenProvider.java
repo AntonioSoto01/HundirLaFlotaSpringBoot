@@ -7,7 +7,9 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -20,8 +22,12 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private String secretKey = "yourSecretKey";
-    private final long expirationTime = 864000000;
+    @Value("${jwt.secret}")
+    private String secretKey;
+    @Getter
+    private static final long LONGEXPIRATIONTIME = 1000 * 60 * 60 * 24 * 10;
+    @Getter
+    private static final long SHORTEXPIRATIONTIME = 1000 * 5;
     private final UsuarioRepository usuarioRepository;
 
     @PostConstruct
@@ -30,7 +36,7 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String generateToken(String email) {
+    public String generateToken(String email, long expirationTime) {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + expirationTime);
 

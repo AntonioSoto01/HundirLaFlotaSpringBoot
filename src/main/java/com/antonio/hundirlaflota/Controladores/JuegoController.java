@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/juego")
@@ -45,7 +46,7 @@ public class JuegoController {
             System.out.println(usuario);
             return ResponseEntity.ok(partida);
         }
-        String token = jwtTokenProvider.generateToken(String.valueOf(partida.getId()));
+        String token = jwtTokenProvider.generateToken(String.valueOf(partida.getId()), JwtTokenProvider.getSHORTEXPIRATIONTIME());
         partida.setTokenPartida(token);
         partidaRepository.save(partida);
 
@@ -78,8 +79,9 @@ public class JuegoController {
         }
     }
 
-    @GetMapping("/cargar")
-    public Partida cargarPartida(@AuthenticationPrincipal Usuario usuario, @RequestParam String token) {
+    @PostMapping("/cargar")
+    public Partida cargarPartida(@AuthenticationPrincipal Usuario usuario, @RequestBody Map<String, Object> requestBody) {
+        String token = (String) requestBody.get("token");
 
         if (usuario != null) {
             List<Partida> partidasNoTerminadas = usuario.getPartidas().stream()
@@ -87,12 +89,12 @@ public class JuegoController {
                     .toList();
 
             if (!partidasNoTerminadas.isEmpty()) {
-
                 return partidasNoTerminadas.get(0);
             } else {
                 return null;
             }
         }
+
         return partidaRepository.findByTokenPartida(token);
     }
 

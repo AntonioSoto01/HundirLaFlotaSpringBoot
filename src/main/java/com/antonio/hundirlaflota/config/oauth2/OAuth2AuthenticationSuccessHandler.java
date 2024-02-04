@@ -78,7 +78,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
 
         // Generate JWT token and redirect
-        String jwtToken = jwtTokenProvider.generateToken(email);
+        String jwtToken = jwtTokenProvider.generateToken(email, JwtTokenProvider.getSHORTEXPIRATIONTIME());
         response.sendRedirect(frontendUrl + "/token/?token=" + jwtToken);
     }
 

@@ -28,7 +28,10 @@ public class JwtTokenProvider {
     private static final long LONGEXPIRATIONTIME = 1000 * 60 * 60 * 24 * 10;
     @Getter
     private static final long SHORTEXPIRATIONTIME = 1000 * 5;
+    @Getter
+    private static final long MIDDLEEXPIRATIONTIME = 1000 * 60 * 15;
     private final UsuarioRepository usuarioRepository;
+
 
     @PostConstruct
     protected void init() {

@@ -1,11 +1,13 @@
 package com.antonio.hundirlaflota.Servicios;
 
+import com.antonio.hundirlaflota.Excepciones.AppException;
 import com.antonio.hundirlaflota.Modelos.Usuario;
 
 import com.antonio.hundirlaflota.config.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class EmailService {
     private String fromEmail;
 
     public void sendEmail(Usuario usuario) {
+
         String token = jwtTokenProvider.generateToken(usuario.getEmail(), JwtTokenProvider.getMIDDLEEXPIRATIONTIME());
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
@@ -30,7 +33,11 @@ public class EmailService {
         String baseUrl = getBaseUrl();
         message.setText("Click the following link to confirm your email: "
                 + baseUrl + "/confirmar?token=" + token);
-        javaMailSender.send(message);
+                try{
+        javaMailSender.send(message);}
+        catch (Exception e){
+            throw new AppException("Error al enviar el email", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     private String getBaseUrl() {

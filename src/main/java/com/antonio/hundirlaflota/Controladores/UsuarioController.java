@@ -1,11 +1,13 @@
 package com.antonio.hundirlaflota.Controladores;
 
+import com.antonio.hundirlaflota.Excepciones.AppException;
 import com.antonio.hundirlaflota.Modelos.Usuario;
 import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;
 import com.antonio.hundirlaflota.Servicios.EmailService;
 import com.antonio.hundirlaflota.config.jwt.JwtTokenProvider;
 import com.antonio.hundirlaflota.dto.UsuarionConf;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -44,7 +46,7 @@ public class UsuarioController {
     }
 
     @PostMapping(value = "login")
-    public ResponseEntity<String> login(@RequestBody Usuario usuario) {
+    public ResponseEntity<String> login(@RequestBody @Valid Usuario usuario) {
         System.out.println(usuario);
         Optional<Usuario> user = usuarioRepository.findByEmail(usuario.getEmail());
         if (user.isPresent()) {
@@ -53,27 +55,29 @@ public class UsuarioController {
             if (passwordEncoder.matches(CharBuffer.wrap(usuario.getContrasena()), user.get().getContrasena())) {
                 if (!usuario.isConfirmado()) {
                     emailService.sendEmail(usuario);
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no confirmado");
+                    throw new AppException("Usuario no confirmado", HttpStatus.UNAUTHORIZED);
+                   // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no confirmado");
                 }
                 String token = jwtTokenProvider.generateToken(usuario.getEmail(), JwtTokenProvider.getLONGEXPIRATIONTIME());
 
                 return ResponseEntity.ok(token);
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña o usuario incorrecta");
+                throw new AppException("Contraseña o usuario incorrecta", HttpStatus.UNAUTHORIZED);
+                //return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña o usuario incorrecta");
             }
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña o usuario incorrecta");
+        throw new AppException("Contraseña o usuario incorrecta", HttpStatus.UNAUTHORIZED);
 
     }
 
     @PostMapping(value = "/registro")
-    public ResponseEntity<String> registro(@RequestBody UsuarionConf usuarionConf) {
+    public ResponseEntity<String> registro(@RequestBody @Valid UsuarionConf usuarionConf) {
         Usuario usuario = usuarionConf.getUsuario();
         String contrasena = usuarionConf.getContrasena();
         Optional<Usuario> user = usuarioRepository.findByEmail(usuario.getEmail());
         if (user.isEmpty()) {
             if (!contrasena.equals(usuario.getContrasena())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Las contraseñas no coinciden");
+    throw new AppException( "Las contraseñas no coinciden", HttpStatus.CONFLICT);
             }
             usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
             usuario.setConfirmado(false);
@@ -86,8 +90,7 @@ public class UsuarioController {
                     .ok("");
         }
 
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe");
+        throw new AppException("El usuario ya existe", HttpStatus.CONFLICT);
     }
 
     @GetMapping("/confirmar")
@@ -105,9 +108,9 @@ public class UsuarioController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return ResponseEntity.ok("");
+            throw new AppException("Usuario confirmado", HttpStatus.OK);
         }
-        return ResponseEntity.notFound().build();
+        throw new AppException("Usuario no encontrado", HttpStatus.NOT_FOUND);
     }
 
 }

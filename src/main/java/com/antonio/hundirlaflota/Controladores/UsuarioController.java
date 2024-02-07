@@ -1,4 +1,3 @@
-
 package com.antonio.hundirlaflota.Controladores;
 
 import com.antonio.hundirlaflota.Modelos.Usuario;
@@ -6,11 +5,8 @@ import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;
 import com.antonio.hundirlaflota.Servicios.EmailService;
 import com.antonio.hundirlaflota.config.jwt.JwtTokenProvider;
 import com.antonio.hundirlaflota.dto.UsuarionConf;
-
-import io.netty.handler.codec.http.HttpResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,35 +43,42 @@ public class UsuarioController {
         return token;
     }
 
-    @GetMapping(value = "login")
-    public ResponseEntity<String> login(Usuario usuario) {
-
+    @PostMapping(value = "login")
+    public ResponseEntity<String> login(@RequestBody Usuario usuario) {
+        System.out.println(usuario);
         Optional<Usuario> user = usuarioRepository.findByEmail(usuario.getEmail());
         if (user.isPresent()) {
+            System.out.println(CharBuffer.wrap(usuario.getContrasena()));
+            System.out.println(user.get().getContrasena());
             if (passwordEncoder.matches(CharBuffer.wrap(usuario.getContrasena()), user.get().getContrasena())) {
-                String token = jwtTokenProvider.generateToken(usuario.getEmail(),
-                        JwtTokenProvider.getLONGEXPIRATIONTIME());
+                if (!usuario.isConfirmado()) {
+                    emailService.sendEmail(usuario);
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no confirmado");
+                }
+                String token = jwtTokenProvider.generateToken(usuario.getEmail(), JwtTokenProvider.getLONGEXPIRATIONTIME());
 
                 return ResponseEntity.ok(token);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña o usuario incorrecta");
             }
         }
-        return null;
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña o usuario incorrecta");
+
     }
 
     @PostMapping(value = "/registro")
     public ResponseEntity<String> registro(@RequestBody UsuarionConf usuarionConf) {
-        System.out.println(usuarionConf);
-        // Extraer el usuario y la contraseña de la solicitud
         Usuario usuario = usuarionConf.getUsuario();
         String contrasena = usuarionConf.getContrasena();
         Optional<Usuario> user = usuarioRepository.findByEmail(usuario.getEmail());
         if (user.isEmpty()) {
-
-            usuario.setContrasena(contrasena); 
+            if (!contrasena.equals(usuario.getContrasena())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Las contraseñas no coinciden");
+            }
+            usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
             usuario.setConfirmado(false);
-            emailService.sendEmail(
-                    jwtTokenProvider.generateToken(usuario.getEmail(), JwtTokenProvider.getMIDDLEEXPIRATIONTIME()),
-                    usuario);
+            usuario.setProveedor("local");
+            emailService.sendEmail(usuario);
             usuarioRepository.save(usuario);
 
 

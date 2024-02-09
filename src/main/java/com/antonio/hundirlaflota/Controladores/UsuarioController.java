@@ -5,7 +5,9 @@ import com.antonio.hundirlaflota.Modelos.Usuario;
 import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;
 import com.antonio.hundirlaflota.Servicios.EmailService;
 import com.antonio.hundirlaflota.config.jwt.JwtTokenProvider;
+import com.antonio.hundirlaflota.dto.LoginDto;
 import com.antonio.hundirlaflota.dto.UsuarionConf;
+import com.antonio.hundirlaflota.mappers.JuegoMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +17,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(origins = "${frontend.url}")
@@ -32,6 +38,7 @@ public class UsuarioController {
     private final PasswordEncoder passwordEncoder;
     @Value("${frontend.url}")
     private String frontendUrl;
+    private final JuegoMapper mapper;
 
     @RequestMapping("/user")
     public Usuario user(@AuthenticationPrincipal Usuario usuario) {
@@ -46,8 +53,11 @@ public class UsuarioController {
     }
 
     @PostMapping(value = "login")
-    public ResponseEntity<String> login(@RequestBody @Valid Usuario usuario) {
-        System.out.println(usuario);
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDto login, BindingResult bindingResult) {
+        Usuario usuario = mapper.loginToUsuario(login);
+        ResponseEntity<?> errors = erroresValidacion(bindingResult);
+        if (errors != null) return errors;
+
         Optional<Usuario> user = usuarioRepository.findByEmail(usuario.getEmail());
         if (user.isPresent()) {
             System.out.println(CharBuffer.wrap(usuario.getContrasena()));
@@ -56,28 +66,40 @@ public class UsuarioController {
                 if (!usuario.isConfirmado()) {
                     emailService.sendEmail(usuario);
                     throw new AppException("Usuario no confirmado", HttpStatus.UNAUTHORIZED);
-                   // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no confirmado");
                 }
                 String token = jwtTokenProvider.generateToken(usuario.getEmail(), JwtTokenProvider.getLONGEXPIRATIONTIME());
 
                 return ResponseEntity.ok(token);
             } else {
                 throw new AppException("Contraseña o usuario incorrecta", HttpStatus.UNAUTHORIZED);
-                //return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña o usuario incorrecta");
             }
+
         }
         throw new AppException("Contraseña o usuario incorrecta", HttpStatus.UNAUTHORIZED);
+    }
 
+    private ResponseEntity<?> erroresValidacion(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return ResponseEntity.badRequest().body(errors);
+        }
+        return null;
     }
 
     @PostMapping(value = "/registro")
-    public ResponseEntity<String> registro(@RequestBody @Valid UsuarionConf usuarionConf) {
-        Usuario usuario = usuarionConf.getUsuario();
+    public ResponseEntity<?> registro(@RequestBody @Valid UsuarionConf usuarionConf, BindingResult bindingResult) {
+        ResponseEntity<?> errors = erroresValidacion(bindingResult);
+        if (errors != null) return errors;
+
+        Usuario usuario = mapper.usarioDtoToUsuario(usuarionConf.getUsuario());
         String contrasena = usuarionConf.getContrasena();
         Optional<Usuario> user = usuarioRepository.findByEmail(usuario.getEmail());
         if (user.isEmpty()) {
             if (!contrasena.equals(usuario.getContrasena())) {
-    throw new AppException( "Las contraseñas no coinciden", HttpStatus.CONFLICT);
+                throw new AppException("Las contraseñas no coinciden", HttpStatus.CONFLICT);
             }
             usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
             usuario.setConfirmado(false);
@@ -85,9 +107,7 @@ public class UsuarioController {
             emailService.sendEmail(usuario);
             usuarioRepository.save(usuario);
 
-
-            return ResponseEntity
-                    .ok("");
+            return ResponseEntity.ok("");
         }
 
         throw new AppException("El usuario ya existe", HttpStatus.CONFLICT);
@@ -112,5 +132,6 @@ public class UsuarioController {
         }
         throw new AppException("Usuario no encontrado", HttpStatus.NOT_FOUND);
     }
+
 
 }

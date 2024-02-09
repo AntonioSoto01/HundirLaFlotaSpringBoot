@@ -1,8 +1,7 @@
 package com.antonio.hundirlaflota.dto;
 
-import com.antonio.hundirlaflota.Modelos.Usuario;
-
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UsuarionConf {
     @Valid
-    Usuario usuario;
+    UsuarioDto usuario;
+    @NotNull(message = "Confirmar contraseña no puede estar vacío")
     String contrasena;
 }

@@ -5,20 +5,27 @@ import com.antonio.hundirlaflota.Modelos.Usuario;
 import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;
 import com.antonio.hundirlaflota.config.jwt.JwtTokenProvider;
 import com.antonio.hundirlaflota.dto.GitHubEmail;
+import com.antonio.hundirlaflota.dto.UserDto;
+import com.antonio.hundirlaflota.mappers.JuegoMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +39,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final WebClient webClient;
     @Value("${frontend.url}")
     private String frontendUrl;
+    private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
+    private final JuegoMapper juegoMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -45,15 +54,15 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             email = findGithubEmail();
         }
 
-        handleUserAuthentication(email, name, providerName, response);
+        handleUserAuthentication(email, name, providerName, response, request);
     }
 
     private void handleUserAuthentication(String email, String name, String providerName,
-                                          HttpServletResponse response) throws IOException {
+                                          HttpServletResponse response, HttpServletRequest request) throws IOException {
         Optional<Usuario> existingUser = usuarioRepository.findByEmail(email);
-
+        Usuario usuario;
         if (existingUser.isPresent()) {
-            Usuario usuario = existingUser.get();
+            usuario = existingUser.get();
 
             if (!usuario.getProveedor().equals(providerName)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -70,16 +79,17 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             }
         } else {
             // User does not exist, create and save a new user
-            Usuario newUser = new Usuario();
-            newUser.setNombre(name);
-            newUser.setEmail(email);
-            newUser.setProveedor(providerName);
-            usuarioRepository.save(newUser);
+            usuario = new Usuario();
+            usuario.setNombre(name);
+            usuario.setEmail(email);
+            usuario.setProveedor(providerName);
+            usuarioRepository.save(usuario);
         }
-
-        // Generate JWT token and redirect
-        String jwtToken = jwtTokenProvider.generateToken(email, JwtTokenProvider.getSHORTEXPIRATIONTIME());
-        response.sendRedirect(frontendUrl + "/token/?token=" + jwtToken);
+        SecurityContext context = SecurityContextHolder.getContext();
+        UserDto userDto = juegoMapper.usuarioToUserDto(usuario);
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(userDto, null, Collections.emptyList()));
+        securityContextRepository.saveContext(context, request, response);
+        response.sendRedirect(frontendUrl);
     }
 
     private String findGithubEmail() {

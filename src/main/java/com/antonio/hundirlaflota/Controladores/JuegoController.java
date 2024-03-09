@@ -8,9 +8,10 @@ import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;
 import com.antonio.hundirlaflota.Servicios.JuegoService;
 import com.antonio.hundirlaflota.config.jwt.JwtTokenProvider;
 import com.antonio.hundirlaflota.dto.ResultadoTurno;
+import com.antonio.hundirlaflota.dto.UserDto;
+import com.antonio.hundirlaflota.mappers.JuegoMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/juego")
 
-@CrossOrigin(origins = "${frontend.url}")
+
 @RequiredArgsConstructor
 public class JuegoController {
-    @Value("${frontend.url}")
-    private String frontendUrl;
+
 
     private final JuegoService juegoService;
 
@@ -33,6 +32,7 @@ public class JuegoController {
 
     private final UsuarioRepository usuarioRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JuegoMapper juegoMapper;
 
     @GetMapping("/iniciar")
     public ResponseEntity<Partida> iniciarJuego(@AuthenticationPrincipal Usuario usuario,
@@ -80,9 +80,9 @@ public class JuegoController {
     }
 
     @PostMapping("/cargar")
-    public Partida cargarPartida(@AuthenticationPrincipal Usuario usuario, @RequestBody Map<String, Object> requestBody) {
+    public Partida cargarPartida(@AuthenticationPrincipal UserDto userDto, @RequestBody Map<String, Object> requestBody) {
         String token = (String) requestBody.get("token");
-
+        Usuario usuario = juegoMapper.userDtoToUsuario(userDto);
         if (usuario != null) {
             List<Partida> partidasNoTerminadas = usuario.getPartidas().stream()
                     .filter(partida -> !partida.getTerminar())

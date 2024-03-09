@@ -16,6 +16,6 @@ public class LoginDto {
     private String email;
 
     @NotEmpty(message = "La contraseña no puede estar vacía")
-    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
+    @Size(min = 5, message = "La contraseña debe tener al menos 5 caracteres")
     private String contrasena;
 }

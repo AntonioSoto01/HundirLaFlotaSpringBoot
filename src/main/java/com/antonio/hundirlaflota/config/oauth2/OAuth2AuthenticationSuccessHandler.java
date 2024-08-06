@@ -1,31 +1,25 @@
 package com.antonio.hundirlaflota.config.oauth2;
 
-import com.antonio.hundirlaflota.Excepciones.AppException;
 import com.antonio.hundirlaflota.Modelos.Usuario;
 import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;
+import com.antonio.hundirlaflota.Servicios.UsuarioService;
 import com.antonio.hundirlaflota.config.jwt.JwtTokenProvider;
 import com.antonio.hundirlaflota.dto.GitHubEmail;
-import com.antonio.hundirlaflota.dto.UserDto;
 import com.antonio.hundirlaflota.mappers.JuegoMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,13 +28,15 @@ import static org.springframework.security.oauth2.client.web.reactive.function.c
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
     private final UsuarioRepository usuarioRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final WebClient webClient;
     @Value("${frontend.url}")
     private String frontendUrl;
-    private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     private final JuegoMapper juegoMapper;
+    private final OAuth2AuthenticationFailureHandler failureHandler;
+    private final UsuarioService usuarioService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -63,16 +59,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         Usuario usuario;
         if (existingUser.isPresent()) {
             usuario = existingUser.get();
-
             if (!usuario.getProveedor().equals(providerName)) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
                 SecurityContextHolder.clearContext();
-                try {
-                    throw new AppException("This email is associated with " + usuario.getProveedor(), HttpStatus.NOT_FOUND);
-                } catch (Exception e) {
-                    response.sendRedirect(frontendUrl + "/token/?error=" + e.getLocalizedMessage());
-                }
+                failureHandler.onAuthenticationFailure(request, response, new AuthenticationException("This email is associated with " + usuario.getProveedor()) {
+                });
                 return;
             } else {
                 // Handle scenario where user is already registered with the same provider
@@ -84,11 +74,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             usuario.setEmail(email);
             usuario.setProveedor(providerName);
             usuarioRepository.save(usuario);
+            System.out.println("Usuario creado: " + usuario);
         }
-        SecurityContext context = SecurityContextHolder.getContext();
-        UserDto userDto = juegoMapper.usuarioToUserDto(usuario);
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(userDto, null, Collections.emptyList()));
-        securityContextRepository.saveContext(context, request, response);
+        usuarioService.saveContext(usuario, request, response);
         response.sendRedirect(frontendUrl);
     }
 

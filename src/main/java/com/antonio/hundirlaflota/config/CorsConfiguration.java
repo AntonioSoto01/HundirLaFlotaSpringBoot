@@ -20,6 +20,7 @@ public class CorsConfiguration implements WebMvcConfigurer {
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true)
-                .maxAge(MAX_AGE_SECS);
+                .maxAge(MAX_AGE_SECS)
+                .exposedHeaders("X-CSRF-TOKEN");
     }
 }

@@ -1,6 +1,9 @@
 package com.antonio.hundirlaflota.config.jwt;
 
+import com.antonio.hundirlaflota.Excepciones.AppException;
+import com.antonio.hundirlaflota.Modelos.Partida;
 import com.antonio.hundirlaflota.Modelos.Usuario;
+import com.antonio.hundirlaflota.Repositorios.PartidaRepository;
 import com.antonio.hundirlaflota.Repositorios.UsuarioRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -10,6 +13,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -31,7 +35,7 @@ public class JwtTokenProvider {
     @Getter
     private static final long MIDDLEEXPIRATIONTIME = 1000 * 60 * 15;
     private final UsuarioRepository usuarioRepository;
-
+    private final PartidaRepository partidaRepository;
 
     @PostConstruct
     protected void init() {
@@ -58,9 +62,17 @@ public class JwtTokenProvider {
                 .build();
 
         DecodedJWT decoded = verifier.verify(token);
-
-        Usuario user = usuarioRepository.findByEmail(decoded.getSubject()).get();
-
+        Usuario user = usuarioRepository.findByEmail(decoded.getSubject()).orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
         return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+    }
+
+    public Partida validateTokenPartida(String token) {
+        Algorithm algorithm = Algorithm.HMAC512(secretKey);
+
+        JWTVerifier verifier = JWT.require(algorithm)
+                .build();
+
+        DecodedJWT decoded = verifier.verify(token);
+        return partidaRepository.findById(Integer.parseInt(decoded.getSubject()));
     }
 }

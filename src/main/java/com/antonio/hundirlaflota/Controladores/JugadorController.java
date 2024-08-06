@@ -1,47 +1,27 @@
 package com.antonio.hundirlaflota.Controladores;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import java.util.Optional;
+import com.antonio.hundirlaflota.Excepciones.AppException;
 import com.antonio.hundirlaflota.Modelos.Jugador;
 import com.antonio.hundirlaflota.Repositorios.JugadorRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@CrossOrigin(origins = "${frontend.url}")
+@RequiredArgsConstructor
 public class JugadorController {
-    @Value("${frontend.url}")
-private String frontendUrl;
-    @Autowired
-    private JugadorRepository jugadorRepository;
 
-    @GetMapping("/jugadores")
-    public List<Jugador> getJugadores() {
-        return (List<Jugador>) jugadorRepository.findAll();
-    }
-    
+    private final JugadorRepository jugadorRepository;
+
     @GetMapping("/jugador/{id}")
     public ResponseEntity<Jugador> getJugadorById(@PathVariable Long id) {
-        Optional<Jugador> optionalJugador = jugadorRepository.findById(id);
+        Jugador jugador = jugadorRepository.findById(id).orElseThrow(() -> new AppException("Jugador no encontrado", HttpStatus.NOT_FOUND));
+        return ResponseEntity.ok(jugador);
+    }
 
-        if (optionalJugador.isPresent()) {
-            return ResponseEntity.ok(optionalJugador.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-    @PostMapping("/jugadores")
-    void addPlayer(@RequestBody Jugador jugador) {
-        jugadorRepository.save(jugador);
-    }
 
 }

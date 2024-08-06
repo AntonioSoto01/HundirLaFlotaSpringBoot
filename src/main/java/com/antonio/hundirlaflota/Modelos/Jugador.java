@@ -38,7 +38,9 @@ public class Jugador {
     private int barcoshundidos = 0;
     private String nombre = "jugador";
     private boolean ver;
-
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Usuario usuario;
+    private String rol;
 
     public Casilla getCasilla(int x, int y) {
         return tablero.get(x * Jugador.getX() + y);

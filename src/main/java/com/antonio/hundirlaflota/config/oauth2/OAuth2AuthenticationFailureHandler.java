@@ -23,7 +23,7 @@ public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationF
         var targetUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/token")
                 .queryParam("error", exception.getLocalizedMessage())
                 .build().toUriString();
-
+        System.out.println(exception);
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }

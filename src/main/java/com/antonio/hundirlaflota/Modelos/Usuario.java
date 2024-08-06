@@ -1,11 +1,11 @@
 package com.antonio.hundirlaflota.Modelos;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Entity
@@ -19,8 +19,6 @@ public class Usuario {
     private String contrasena;
     private String proveedor;
     private boolean confirmado = true;
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "usuario_partidas", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "partida_id"))
-    private List<Partida> partidas = new ArrayList<>();
+
 
 }

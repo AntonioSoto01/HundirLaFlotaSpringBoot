@@ -5,13 +5,27 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: barca
+      MYSQL_DATABASE: barcos
       MYSQL_USER: meetmap
       MYSQL_PASSWORD: alumno
     ports:
       - 3306:3306
     volumes:
       - db_data:/var/lib/mysql
-
+  rabbitmq:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 61613:61613
+      - 15674:15674
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 volumes:
   db_data:
+  rabbitmq_data:

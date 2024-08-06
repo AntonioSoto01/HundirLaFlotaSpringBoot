@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class UserDto implements AuthenticatedPrincipal, Serializable {
-    private long id;
+    private Long id;
     private String nombre;
     private String email;
     private String contrasena;

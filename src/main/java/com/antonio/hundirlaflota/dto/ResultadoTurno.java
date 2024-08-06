@@ -13,5 +13,4 @@ public class ResultadoTurno {
     private String resultadoDisparo;
     private String nombreJugador;
     private Casilla casillaDisparada;
-
 }

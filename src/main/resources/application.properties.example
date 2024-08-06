@@ -1,15 +1,21 @@
-
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.datasource.url=jdbc:mysql://${MYSQL_HOST:localhost}:3306/bd
-spring.datasource.username=Usuario
-spring.datasource.password=Contraseña
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 springdoc.swagger-ui.path=/swagger
+springdoc.swagger-ui.csrf.enabled=true
 spring.profiles.active=dev
-# spring.jpa.properties.hibernate.show_sql=true
-# spring.jpa.properties.hibernate.use_sql_comments=true
-# spring.jpa.properties.hibernate.format_sql=true
 spring.security.oauth2.client.registration.google.client-id=
 spring.security.oauth2.client.registration.google.client-secret=
 spring.security.oauth2.client.registration.github.client-id=
 spring.security.oauth2.client.registration.github.client-secret=
+spring.security.oauth2.client.registration.github.scope=user
+jwt.secret=
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=
+spring.mail.password=
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
+# Not needed in development as it will obtain the datasource from the docker-compose integration, but Liquibase tests require it
+spring.datasource.url=jdbc:mysql://${MYSQL_HOST:localhost}:3306/bd
+spring.datasource.username=Usuario
+spring.datasource.password=Contraseña
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver

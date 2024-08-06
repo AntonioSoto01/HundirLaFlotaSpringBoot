@@ -17,41 +17,41 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 public class Casilla {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-	private int x;
+    private int x;
 
-	private int y;
+    private int y;
 
-	private boolean disparado;
-	private boolean hundido;
-	@ManyToOne
-	private Barco barco;
+    private boolean disparado;
+    private boolean hundido;
+    @ManyToOne
+    private Barco barco;
 
-	private boolean puedebarco;
-	private boolean puededisparar;
+    private boolean puedebarco;
+    private boolean puededisparar;
 
-	private String cadena;
+    private String cadena;
 
-	@Override
-	public String toString() {
-		return ((char) ('A' + y) + "" + (x + 1));
-	}
+    @Override
+    public String toString() {
+        return ((char) ('A' + y) + "" + (x + 1));
+    }
 
-	public Casilla(int x, int y) {
-		super();
-		this.x = x;
-		this.y = y;
-		this.disparado = false;
-		this.puedebarco = true;
-		this.puededisparar = true;
-		this.barco = null;
-		this.cadena = convertirACadena();
-	}
+    public Casilla(int x, int y) {
+        super();
+        this.x = x;
+        this.y = y;
+        this.disparado = false;
+        this.puedebarco = true;
+        this.puededisparar = true;
+        this.barco = null;
+        this.cadena = convertirACadena();
+    }
 
-	public String convertirACadena() {
-		return ((char) ('A' + y) + "" + (x + 1));
-	}
+    public String convertirACadena() {
+        return ((char) ('A' + y) + "" + (x + 1));
+    }
 }

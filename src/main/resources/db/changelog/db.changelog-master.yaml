@@ -1,0 +1,753 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1713974977414-1
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: PRIMARY_ID
+                  type: CHAR(36)
+              - column:
+                  constraints:
+                    nullable: false
+                    unique: true
+                  name: SESSION_ID
+                  type: CHAR(36)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: CREATION_TIME
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: LAST_ACCESS_TIME
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: MAX_INACTIVE_INTERVAL
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: EXPIRY_TIME
+                  type: BIGINT
+              - column:
+                  name: PRINCIPAL_NAME
+                  type: VARCHAR(100)
+            tableName: SPRING_SESSION
+  - changeSet:
+      id: 1713974977414-2
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: SESSION_PRIMARY_ID
+                  type: CHAR(36)
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: ATTRIBUTE_NAME
+                  type: VARCHAR(200)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: ATTRIBUTE_BYTES
+                  type: BLOB
+            tableName: SPRING_SESSION_ATTRIBUTES
+  - changeSet:
+      id: 1713974977414-3
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: barco_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: casilla_id
+                  type: BIGINT
+            tableName: alrededor_barco
+  - changeSet:
+      id: 1713974977414-4
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: hundido
+                  type: BIT(1)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: longitud
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: posicion
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: tocado
+                  type: INT
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: BIGINT
+            tableName: barco
+  - changeSet:
+      id: 1713974977414-5
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: disparado
+                  type: BIT(1)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: hundido
+                  type: BIT(1)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: puedebarco
+                  type: BIT(1)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: puededisparar
+                  type: BIT(1)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: x
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: y
+                  type: INT
+              - column:
+                  name: barco_id
+                  type: BIGINT
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: cadena
+                  type: VARCHAR(255)
+            tableName: casilla
+  - changeSet:
+      id: 1713974977414-6
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: barcoshundidos
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: ver
+                  type: BIT(1)
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: usuario_id
+                  type: BIGINT
+              - column:
+                  name: nombre
+                  type: VARCHAR(255)
+              - column:
+                  name: rol
+                  type: VARCHAR(255)
+            tableName: jugador
+  - changeSet:
+      id: 1713974977414-7
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: estado
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    unique: true
+                  name: ult_tocado_id
+                  type: BIGINT
+            tableName: jugador1
+  - changeSet:
+      id: 1713974977414-8
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    unique: true
+                  name: barcos_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: jugador_id
+                  type: BIGINT
+            tableName: jugador_barcos
+  - changeSet:
+      id: 1713974977414-9
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: jugador_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                    unique: true
+                  name: tablero_id
+                  type: BIGINT
+            tableName: jugador_tablero
+  - changeSet:
+      id: 1713974977414-10
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  name: terminar
+                  type: BIT(1)
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: jugador1_id
+                  type: BIGINT
+              - column:
+                  name: jugador2_id
+                  type: BIGINT
+              - column:
+                  name: token_partida
+                  type: VARCHAR(255)
+              - column:
+                  name: turno
+                  type: VARCHAR(255)
+            tableName: partida
+  - changeSet:
+      id: 1713974977414-11
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: barco_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: casilla_id
+                  type: BIGINT
+            tableName: posiciones_barco
+  - changeSet:
+      id: 1713974977414-12
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: confirmado
+                  type: BIT(1)
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: contrasena
+                  type: VARCHAR(255)
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+              - column:
+                  name: nombre
+                  type: VARCHAR(255)
+              - column:
+                  name: proveedor
+                  type: VARCHAR(255)
+              - column:
+                  name: rol
+                  type: VARCHAR(255)
+            tableName: usuario
+  - changeSet:
+      id: 1713974977414-13
+      author: Barcos
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: partida_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: usuario_id
+                  type: BIGINT
+            tableName: usuario_partidas
+  - changeSet:
+      id: 1713974977414-14
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: usuario_id
+            indexName: FK1sd23fs2i6c3f0g5dggalkf24
+            tableName: usuario_partidas
+  - changeSet:
+      id: 1713974977414-15
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: barco_id
+            indexName: FK3uble4udmxqyw03bhp6e9b9do
+            tableName: posiciones_barco
+  - changeSet:
+      id: 1713974977414-16
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: partida_id
+            indexName: FK4f2lx7k2lc4fqyajkk39hr40j
+            tableName: usuario_partidas
+  - changeSet:
+      id: 1713974977414-17
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: jugador_id
+            indexName: FK59mh9jqtd9g5oxstea6wm601q
+            tableName: jugador_tablero
+  - changeSet:
+      id: 1713974977414-18
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: casilla_id
+            indexName: FK9ffbpw8ak8yx1i05fu4f8lbk1
+            tableName: posiciones_barco
+  - changeSet:
+      id: 1713974977414-19
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: casilla_id
+            indexName: FKbin323q8jcqjj40f3yvd5ecff
+            tableName: alrededor_barco
+  - changeSet:
+      id: 1713974977414-20
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: barco_id
+            indexName: FKcjmmtkmgnu02k44scrctkep7h
+            tableName: alrededor_barco
+  - changeSet:
+      id: 1713974977414-21
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: jugador_id
+            indexName: FKgoxld2eor4eg7kwd6p6vecq51
+            tableName: jugador_barcos
+  - changeSet:
+      id: 1713974977414-22
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: jugador1_id
+            indexName: FKo7d9gomgj14c169aa6su44b94
+            tableName: partida
+  - changeSet:
+      id: 1713974977414-23
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: barco_id
+            indexName: FKq0wgcer8nonwc2ke3ix7rneyq
+            tableName: casilla
+  - changeSet:
+      id: 1713974977414-24
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: usuario_id
+            indexName: FKs8xmkcyi29yx1asmxpfaxl6wo
+            tableName: jugador
+  - changeSet:
+      id: 1713974977414-25
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: jugador2_id
+            indexName: FKt4b3slu4jfvyw58nb27sc7we0
+            tableName: partida
+  - changeSet:
+      id: 1713974977414-26
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: EXPIRY_TIME
+            indexName: SPRING_SESSION_IX2
+            tableName: SPRING_SESSION
+  - changeSet:
+      id: 1713974977414-27
+      author: Barcos
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: PRINCIPAL_NAME
+            indexName: SPRING_SESSION_IX3
+            tableName: SPRING_SESSION
+  - changeSet:
+      id: 1713974977414-28
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: usuario_id
+            baseTableName: usuario_partidas
+            constraintName: FK1sd23fs2i6c3f0g5dggalkf24
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: usuario
+            validate: true
+  - changeSet:
+      id: 1713974977414-29
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: barco_id
+            baseTableName: posiciones_barco
+            constraintName: FK3uble4udmxqyw03bhp6e9b9do
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: barco
+            validate: true
+  - changeSet:
+      id: 1713974977414-30
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: partida_id
+            baseTableName: usuario_partidas
+            constraintName: FK4f2lx7k2lc4fqyajkk39hr40j
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: partida
+            validate: true
+  - changeSet:
+      id: 1713974977414-31
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: jugador_id
+            baseTableName: jugador_tablero
+            constraintName: FK59mh9jqtd9g5oxstea6wm601q
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: jugador
+            validate: true
+  - changeSet:
+      id: 1713974977414-32
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: barcos_id
+            baseTableName: jugador_barcos
+            constraintName: FK7e5cpseo93u3t8cii6nl36lmo
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: barco
+            validate: true
+  - changeSet:
+      id: 1713974977414-33
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: casilla_id
+            baseTableName: posiciones_barco
+            constraintName: FK9ffbpw8ak8yx1i05fu4f8lbk1
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: casilla
+            validate: true
+  - changeSet:
+      id: 1713974977414-34
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: casilla_id
+            baseTableName: alrededor_barco
+            constraintName: FKbin323q8jcqjj40f3yvd5ecff
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: casilla
+            validate: true
+  - changeSet:
+      id: 1713974977414-35
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: barco_id
+            baseTableName: alrededor_barco
+            constraintName: FKcjmmtkmgnu02k44scrctkep7h
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: barco
+            validate: true
+  - changeSet:
+      id: 1713974977414-36
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: tablero_id
+            baseTableName: jugador_tablero
+            constraintName: FKec14c33slio3oj09dr0lcjx73
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: casilla
+            validate: true
+  - changeSet:
+      id: 1713974977414-37
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: id
+            baseTableName: jugador1
+            constraintName: FKf6ouhn0ej4de5jm9ulavkxwxr
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: jugador
+            validate: true
+  - changeSet:
+      id: 1713974977414-38
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: ult_tocado_id
+            baseTableName: jugador1
+            constraintName: FKfgwu8f2kem977v7fjgy285d2w
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: casilla
+            validate: true
+  - changeSet:
+      id: 1713974977414-39
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: jugador_id
+            baseTableName: jugador_barcos
+            constraintName: FKgoxld2eor4eg7kwd6p6vecq51
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: jugador
+            validate: true
+  - changeSet:
+      id: 1713974977414-40
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: jugador1_id
+            baseTableName: partida
+            constraintName: FKo7d9gomgj14c169aa6su44b94
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: jugador
+            validate: true
+  - changeSet:
+      id: 1713974977414-41
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: barco_id
+            baseTableName: casilla
+            constraintName: FKq0wgcer8nonwc2ke3ix7rneyq
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: barco
+            validate: true
+  - changeSet:
+      id: 1713974977414-42
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: usuario_id
+            baseTableName: jugador
+            constraintName: FKs8xmkcyi29yx1asmxpfaxl6wo
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: usuario
+            validate: true
+  - changeSet:
+      id: 1713974977414-43
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: jugador2_id
+            baseTableName: partida
+            constraintName: FKt4b3slu4jfvyw58nb27sc7we0
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: jugador
+            validate: true
+  - changeSet:
+      id: 1713974977414-44
+      author: Barcos
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: SESSION_PRIMARY_ID
+            baseTableName: SPRING_SESSION_ATTRIBUTES
+            constraintName: SPRING_SESSION_ATTRIBUTES_FK
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: PRIMARY_ID
+            referencedTableName: SPRING_SESSION
+            validate: true
+

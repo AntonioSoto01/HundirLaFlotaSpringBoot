@@ -1,15 +1,14 @@
 package com.antonio.hundirlaflota.Servicios;
 
-import com.antonio.hundirlaflota.Excepciones.AppException;
-import com.antonio.hundirlaflota.Modelos.Usuario;
-
 import com.antonio.hundirlaflota.config.jwt.JwtTokenProvider;
+import com.antonio.hundirlaflota.dto.EmailData;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,27 +22,21 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-    public void sendEmail(Usuario usuario) {
-
-        String token = jwtTokenProvider.generateToken(usuario.getEmail(), JwtTokenProvider.getMIDDLEEXPIRATIONTIME());
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(usuario.getEmail());
-        message.setSubject("Email Confirmation");
-        String baseUrl = getBaseUrl();
-        message.setText("Click the following link to confirm your email: "
-                + baseUrl + "/confirmar?token=" + token);
-                try{
-        javaMailSender.send(message);}
-        catch (Exception e){
-            throw new AppException("Error al enviar el email", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @SneakyThrows
+    public void sendEmail(EmailData emailData) {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom(fromEmail);
+        helper.setTo(emailData.getEmail());
+        helper.setSubject("Email Confirmation");
+        helper.setText("<p>Click the following <a href='" + getBaseUrl() + emailData.getPath() + "?token=" + emailData.getToken() + "'>link</a>" + emailData.getMessage() + "</p>", true);
+        javaMailSender.send(message);
     }
 
     private String getBaseUrl() {
-
+        String scheme = request.getScheme() + "://";
         String hostName = request.getServerName();
         int serverPort = request.getServerPort();
-        return "http://" + hostName + ("localhost".equals(hostName) ? ":" + serverPort : "");
+        return scheme + hostName + ("localhost".equals(hostName) ? ":" + serverPort : "/api");
     }
 }
